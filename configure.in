@@ -1,5 +1,5 @@
 AC_INIT(src/FC.cpp)
-AM_INIT_AUTOMAKE(libfc14audiodecoder, 1.0.0)
+AM_INIT_AUTOMAKE(libfc14audiodecoder, 1.0.1)
 AM_CONFIG_HEADER(src/Config.h)
 AC_CONFIG_MACRO_DIR([m4])
 

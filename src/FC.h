@@ -175,6 +175,7 @@ class FC : public PaulaPlayer {
 
     struct CHdata _CHdata[channels];
 
+    void killChannel(CHdata&);
     void nextNote(CHdata&);
     void processModulation(CHdata&);
     void readModCommand(CHdata&);

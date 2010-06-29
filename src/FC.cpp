@@ -68,6 +68,7 @@ void FC::setMixer(PaulaMixer* mixer) {
     for (int v=0; v<channels; v++) {
         _CHdata[v].ch = mixer->getVoice(v);
         _CHdata[v].ch->off();
+        killChannel(_CHdata[v]);
     }
 }
 
@@ -396,14 +397,10 @@ void FC::restart(int startStep, int endStep) {
             _CHdata[c].sndSeqPos = 0;
         _CHdata[c].sndModSustainTime = 0;
         _CHdata[c].noteValue = 0;
+        _CHdata[c].period = 0;
         _CHdata[c].volume = 0;
 
-        // The interface to a cheap Paula simulator/mixer.
-        _CHdata[c].ch->off();
-        _CHdata[c].ch->paula.start = fcBuf.tellBegin();  // 0
-        // (NOTE) Some implementations set this to 0x0100.
-        _CHdata[c].ch->paula.length = 1;
-        _CHdata[c].ch->takeNextBuf();
+        killChannel(_CHdata[c]);
 
         // Track table start and end.
         _CHdata[c].trackStart = _admin.offsets.trackTable+c*3;
@@ -498,6 +495,15 @@ void FC::run()
 }
 
 // --------------------------------------------------------------------------
+
+void FC::killChannel(CHdata& CHXdata) {
+    // The interface to a cheap Paula simulator/mixer.
+    CHXdata.ch->off();
+    CHXdata.ch->paula.start = fcBuf.tellBegin()+_admin.offsets.silence+1;
+    // (NOTE) Some implementations set this to 0x0100.
+    CHXdata.ch->paula.length = 1;
+    CHXdata.ch->takeNextBuf();
+}
 
 void FC::nextNote(CHdata& CHXdata)
 {
@@ -984,9 +990,15 @@ void FC::processPerVol(CHdata& CHXdata)
                     {
                         // Read volume value and advance.
                         CHXdata.volume = fcBuf[seqOffs];
-                        ++CHXdata.volSeqPos;
+                        if (++CHXdata.volSeqPos > 0x3f) {
+                            CHXdata.volSeqPos = 0x3f;
+                        }
+                        // Full range check for volume 0-64.
                         if (CHXdata.volume > 64) {
                             CHXdata.volume = 64;
+                        }
+                        else if (CHXdata.volume < 0) {
+                            CHXdata.volume = 0;
                         }
                         break;
                     }

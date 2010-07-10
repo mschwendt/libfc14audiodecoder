@@ -50,32 +50,31 @@ const uword FC::periods[(5+6)*12+4] = {
     0x0868, 0x07f0, 0x0780, 0x0714,
     // +0x48 (*2 = byte-offset)
     //
-    // (NOTE) 0x49 = PATTERN BREAK, so this extra low octave is quite
+    // (NOTE) 0x49 = PATTERN BREAK, so the extra low octave would be
     // useless for direct access. Transpose values would be required.
-    // However, the FC player has hardcoded 0x0d60 as the lowest
-    // sample period and does a range-check prior to writing a period
-    // to the AMIGA custom chip. In short: This octave is useless!
-    //
-    0x1ac0, 0x1940, 0x17d0, 0x1680, 0x1530, 0x1400, 0x12e0, 0x11d0,
-    0x10d0, 0x0fe0, 0x0f00, 0x0e28,
+    // However, the FC 1.4 player still has hardcoded 0x0d60 as the lowest
+    // sample period and does a range-check prior to writing a period to
+    // the AMIGA custom chip. In short: This octave is useless!  Plus:
+    // Since some music modules access the periods at offset 0x54 via
+    // transpose, the useless octave cause breakage.
+    // 0x1ac0, 0x1940, 0x17d0, 0x1680, 0x1530, 0x1400, 0x12e0, 0x11d0,
+    // 0x10d0, 0x0fe0, 0x0f00, 0x0e28,
     //    
-    // +0x54 (*2 = byte-offset)
-    //
     // End of Future Composer 1.0 - 1.3 period table.
-    //
     0x06b0, 0x0650, 0x05f4, 0x05a0, 0x054c, 0x0500, 0x04b8, 0x0474,
     0x0434, 0x03f8, 0x03c0, 0x038a,
-    // +0x60 (*2 = byte-offset)
+    // +0x54 (*2 = byte-offset)
     0x0358, 0x0328, 0x02fa, 0x02d0, 0x02a6, 0x0280, 0x025c, 0x023a,
     0x021a, 0x01fc, 0x01e0, 0x01c5,
-    // +0x6c (*2 = byte-offset)
+    // +0x60 (*2 = byte-offset)
     0x01ac, 0x0194, 0x017d, 0x0168,	0x0153, 0x0140, 0x012e, 0x011d,
     0x010d, 0x00fe, 0x00f0, 0x00e2,
-    // +0x78 (*2 = byte-offset)
+    // +0x6c (*2 = byte-offset)
     0x00d6, 0x00ca, 0x00be, 0x00b4, 0x00aa, 0x00a0, 0x0097, 0x008f,
-    // +0x80 (*2 = byte-offset), everything from here on is unreachable.
+    // +0x78 (*2 = byte-offset)
     0x0087, 0x007f, 0x0078, 0x0071
-    // +0x84 (*2 = byte-offset)
+    // +0x80 (*2 = byte-offset), everything from here on is unreachable
+    // due to 0x7f AND.
 };
 
 const uword FC::SMOD_waveInfo[47*4] = {

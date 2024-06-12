@@ -1,5 +1,5 @@
 C language wrapper library for Future Composer audio decoding
-http://xmms-fc.sf.net
+https://github.com/mschwendt/future-composer-audio-decoding
 
 This library provides a C API for an old audio decoder that has been used
 in several plug-ins for versatile audio players like XMMS, BMP, Audacious
@@ -23,9 +23,9 @@ would be very difficult to fix an emulated MC680x0 machine code
 binary-only player.
 
 If you still encounter unexpected behaviour, please submit your bug report
-at the following place: http://sourceforge.net/projects/xmms-fc/
+at the following place: https://github.com/mschwendt/future-composer-audio-decoding/issues
 
-Implemented in 1997 by Michael Schwendt (mschwendt@users.sf.net). Based
+Implemented in 1997 by Michael Schwendt. Based
 mainly on hand-written notes from 1990 which were made upon fixing a
 variety of bugs in the original player source code which was released with
 Future Composer. Much of the code outside the FC player implementation is

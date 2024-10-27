@@ -760,7 +760,6 @@ void FC::readModCommand_recurse(CHdata& CHXdata)
     if (fcBuf[seqOffs] == SNDMOD_END)
     {
         processPerVol(CHXdata);
-        return;
     }
     
     else if (fcBuf[seqOffs] == SNDMOD_SETWAVE)
@@ -779,7 +778,6 @@ void FC::readModCommand_recurse(CHdata& CHXdata)
         readSeqTranspose(CHXdata);
         
         processPerVol(CHXdata);
-        return;
     }
 
     else if (fcBuf[seqOffs] == SNDMOD_CHANGEWAVE)
@@ -790,7 +788,6 @@ void FC::readModCommand_recurse(CHdata& CHXdata)
         readSeqTranspose(CHXdata);
         
         processPerVol(CHXdata);
-        return;
     }
 
     else if (fcBuf[seqOffs] == SNDMOD_SETPACKWAVE)
@@ -848,7 +845,6 @@ void FC::readModCommand_recurse(CHdata& CHXdata)
         readSeqTranspose(CHXdata);
         
         processPerVol(CHXdata);
-        return;
     }
 
     else if (fcBuf[seqOffs] == SNDMOD_NEWSEQ)
@@ -857,7 +853,6 @@ void FC::readModCommand_recurse(CHdata& CHXdata)
         CHXdata.sndSeq = _admin.offsets.sndModSeqs+(seq<<6);
         CHXdata.sndSeqPos = 0;
         readModCommand_recurse(CHXdata);
-        return;
     }
 
     else if (fcBuf[seqOffs] == SNDMOD_SUSTAIN)
@@ -883,7 +878,6 @@ void FC::readModCommand_recurse(CHdata& CHXdata)
         CHXdata.sndSeqPos += 3;
         
         processPerVol(CHXdata);
-        return;
     }
 
     else if (fcBuf[seqOffs] == SNDMOD_PITCHBEND)
@@ -895,7 +889,6 @@ void FC::readModCommand_recurse(CHdata& CHXdata)
         readSeqTranspose(CHXdata);
     
         processPerVol(CHXdata);
-        return;
     }
 
     else // Not a command, but a transpose value.

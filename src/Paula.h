@@ -18,6 +18,7 @@ class PaulaVoice {
         uword volume;        // 0-64
     } paula;
 
+    virtual ~PaulaVoice() { };
     virtual void on();
     virtual void off();
     virtual void takeNextBuf();   // take parameters from paula.* (or just to repeat.*)
@@ -25,12 +26,14 @@ class PaulaVoice {
 
 class PaulaMixer {
  public:
+    virtual ~PaulaMixer() { };
     virtual void init(ubyte voices) = 0;
     virtual PaulaVoice* getVoice(ubyte) = 0;
 };
 
 class PaulaPlayer {
  public:
+    virtual ~PaulaPlayer() { };
     virtual void run() = 0;
 };
 

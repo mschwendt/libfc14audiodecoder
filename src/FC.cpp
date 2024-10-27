@@ -722,6 +722,8 @@ inline void FC::readSeqTranspose(CHdata& CHXdata)
 
 void FC::processModulation(CHdata& CHXdata)
 {
+    // Decrease sustain counter and decide whether to continue
+    // to envelope modulation.
     if (CHXdata.sndModSustainTime != 0)
     {
         --CHXdata.sndModSustainTime;
@@ -733,6 +735,16 @@ void FC::processModulation(CHdata& CHXdata)
 
 void FC::readModCommand(CHdata& CHXdata)
 {
+    readModRecurse = 0;
+    readModCommand_recurse(CHXdata);
+}
+
+void FC::readModCommand_recurse(CHdata& CHXdata)
+{
+    if (++readModRecurse > recurseLimit) {
+        return;
+    }
+
     udword seqOffs = CHXdata.sndSeq+CHXdata.sndSeqPos;
 
     // (NOTE) After each command (except LOOP, END, SUSTAIN,
@@ -844,8 +856,7 @@ void FC::readModCommand(CHdata& CHXdata)
         uword seq = fcBuf[seqOffs+1];
         CHXdata.sndSeq = _admin.offsets.sndModSeqs+(seq<<6);
         CHXdata.sndSeqPos = 0;
-        // Recursive call (ought to be protected via a counter).
-        readModCommand(CHXdata);
+        readModCommand_recurse(CHXdata);
         return;
     }
 
@@ -856,9 +867,13 @@ void FC::readModCommand(CHdata& CHXdata)
 
         // Decrease sustain counter and decide whether to continue
         // to envelope modulation.
-        // Recursive call (ought to be protected via a counter).
-        processModulation(CHXdata);
-        return;
+        if (CHXdata.sndModSustainTime != 0)
+        {
+            --CHXdata.sndModSustainTime;
+            processPerVol(CHXdata);
+            return;
+        }
+        readModCommand_recurse(CHXdata);
     }
 
     else if (fcBuf[seqOffs] == SNDMOD_NEWVIB)

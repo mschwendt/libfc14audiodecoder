@@ -74,6 +74,9 @@ class FC : public PaulaPlayer {
 
     static const int channels = 4;
 
+    static const int recurseLimit = 64;  // way more than needed
+    int readModRecurse;
+
  private:
     PaulaVoice _dummyVoices[channels];
 
@@ -179,6 +182,7 @@ class FC : public PaulaPlayer {
     void nextNote(CHdata&);
     void processModulation(CHdata&);
     void readModCommand(CHdata&);
+    void readModCommand_recurse(CHdata&);
     void processPerVol(CHdata&);
     inline void setWave(CHdata&, ubyte num);
     inline void readSeqTranspose(CHdata&);

@@ -6,7 +6,7 @@ fcdecincludedir = $(includedir)
 fcplay_LDFLAGS = -Wl,--gc-sections -Wl,--print-gc-sections -Wl,-s
 
 fcplay_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)/src -fdata-sections -ffunction-sections
-fcplay_LDADD = $(top_srcdir)/src/libfc14audiodecoder.la -lasound
+fcplay_LDADD = -L$(top_srcdir)/src -lfc14audiodecoder -lasound
 
 fcplay_SOURCES = fcplay.cpp
 

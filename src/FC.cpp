@@ -152,9 +152,11 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
 
 #if defined(DEBUG)
     cout << "Track table (sequencer): " << endl;
+#if defined(DEBUG_DUMP)
     dumpLines(fcBuf,_admin.offsets.trackTable,
               readEndian(fcBuf[4],fcBuf[5],fcBuf[6],fcBuf[7]),
               TRACKTAB_ENTRY_LENGTH);
+#endif
     cout << endl;
 #endif
 
@@ -168,8 +170,10 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
                                       fcBuf[14],fcBuf[15])/PATTERN_LENGTH;
 #if defined(DEBUG)
     cout << "Patterns: " << hex << _admin.usedPatterns << endl;
+#if defined(DEBUG_DUMP)
     dumpBlocks(fcBuf,_admin.offsets.patterns,
                _admin.usedPatterns*PATTERN_LENGTH,PATTERN_LENGTH);
+#endif
 #endif
 
     // At +16 is offset to first sound modulation sequence.
@@ -183,8 +187,10 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
 #if defined(DEBUG)
     cout << "Sound modulation sequences: "
         << hex << _admin.usedSndModSeqs << endl;
+#if defined(DEBUG_DUMP)
     dumpBlocks(fcBuf,_admin.offsets.sndModSeqs,
                _admin.usedSndModSeqs*64,64);
+#endif
 #endif
     
     // At +24 is offset to first volume modulation sequence.
@@ -198,8 +204,10 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
 #if defined(DEBUG)
     cout << "Volume modulation sequences: "
         << hex << _admin.usedVolModSeqs << endl;
+#if defined(DEBUG_DUMP)
     dumpBlocks(fcBuf,_admin.offsets.volModSeqs,
                _admin.usedVolModSeqs*64,64);
+#endif
 #endif
 
 #if defined(DEBUG)
@@ -286,8 +294,10 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
             << dec << setw(6) << (int)_sounds[sam].repOffs << " "
             << dec << setw(6) << (int)_sounds[sam].repLen*2L << " "
             << endl;
+#if defined(DEBUG_DUMP)
         dumpLines(fcBuf,(long)_sounds[sam].start-(long)fcBuf.tellBegin(),
                   16,16);
+#endif
 #endif
     }
 

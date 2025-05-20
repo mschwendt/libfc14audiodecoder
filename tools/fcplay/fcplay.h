@@ -271,7 +271,7 @@ namespace player
 		std::vector<uint8_t> buf;
 		void print()
 		{
-			printf("\r%0*zu %0*zu/%0*zu %s", max_file_size_len, buf.size(), max_song_length_len, cur, max_song_length_len, end, name.c_str());
+			printf("\r%0*zu %0*zu/%0*zu %s ", max_file_size_len, buf.size(), max_song_length_len, cur, max_song_length_len, end, name.c_str());
 		}
 		bool song_end()
 		{

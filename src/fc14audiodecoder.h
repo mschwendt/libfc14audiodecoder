@@ -64,7 +64,7 @@ extern "C" {
     const char* fc14dec_format_name(void* decoder);
 
     /* Fill output sample buffer with audio. */
-    void fc14dec_buffer_fill(void* decoder, void* buffer, unsigned long int length);
+    unsigned long int fc14dec_buffer_fill(void* decoder, void* buffer, unsigned long int length);
 
 #ifdef __cplusplus
 }

@@ -51,7 +51,7 @@ class LamePaulaMixer : public PaulaMixer
     void init(ubyte voices);
     PaulaVoice* getVoice(ubyte); 
 
-    void fillBuffer(void* buffer, udword bufferLen, PaulaPlayer *player);
+    unsigned long int fillBuffer(void* buffer, udword bufferLen, PaulaPlayer *player);
 
  private:
     void setReplayingSpeed();

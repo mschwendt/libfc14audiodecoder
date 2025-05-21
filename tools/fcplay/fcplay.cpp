@@ -10,16 +10,17 @@ int main(int argc, char *argv[])
 
 	for(int i = optind; i < argc; i++)
 		player::queue(argv[i]);
-	player::init();
 
 	if(player::playlist.size() > 0)
 	{
 		sys::audio::init();
+		player::init();
 
 		sys::input::init();
 		for(size_t i = 0; i < player::playlist.size(); i++)
 			player::play(i);
 
+		player::halt();
 		sys::audio::halt();
 		exit(EXIT_SUCCESS);
 	}

@@ -30,7 +30,7 @@ namespace sys
 void print_usage(const char* program_file)
 {
 	cerr << "Usage: " << program_file << " [OPTION]... [FILE]..." << std::endl;
-	cerr << "Play Future Composer Tracker .fc4/.fc13 audio FILEs (the current directory by default)." << std::endl << std::endl;
+	cerr << "Play Future Composer Tracker .fc, .fc13, .fc14, .fc3, .fc4 audio FILEs (the current directory by default)." << std::endl << std::endl;
 
 	cerr << "Mandatory arguments to long options are mandatory for short options too." << std::endl;
 	cerr << "  -r, --recursive             recursively traverse directories" << std::endl;
@@ -327,6 +327,11 @@ namespace player
 		}
 		fc14dec_restart(decoder);
 		cout << endl;
+		return true;
+	}
+	bool halt()
+	{
+		fc14dec_delete(decoder);
 		return true;
 	}
 };

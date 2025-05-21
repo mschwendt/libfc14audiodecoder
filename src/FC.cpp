@@ -77,7 +77,7 @@ bool FC::isOurData(void *data, unsigned long int length) {
     if ( length<5 ) {
         return false;
     }
-    ubyte *d = static_cast<ubyte*>(data);
+    uint8_t *d = static_cast<uint8_t*>(data);
     // Check for "SMOD" ID (Future Composer 1.0 to 1.3).
     isSMOD = (d[0]==0x53 && d[1]==0x4D && d[2]==0x4F && d[3]==0x44 &&
               d[4]==0x00);
@@ -95,7 +95,7 @@ bool FC::isOurData(void *data, unsigned long int length) {
 }
 
 
-bool FC::init(void *data, udword length, int startStep, int endStep) {
+bool FC::init(void *data, uint32_t length, int startStep, int endStep) {
     if ( !isOurData(data,length) ) {
         formatName = UNKNOWN_FORMAT_NAME;
         return false;
@@ -105,14 +105,14 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
     else if (isFC14)
         formatName = FC14_FORMAT_NAME;
     
-    udword copyLen = length+sizeof(silenceData);
+    uint32_t copyLen = length+sizeof(silenceData);
     if (copyLen > inputLen) {
         delete[] input;
         inputLen = 0;
 #ifdef FC_HAVE_NOTHROW
-        if ( (input = new(std::nothrow) ubyte[copyLen]) == 0 ) {
+        if ( (input = new(std::nothrow) uint8_t[copyLen]) == 0 ) {
 #else
-        if ( (input = new ubyte[copyLen]) == 0 ) {
+        if ( (input = new uint8_t[copyLen]) == 0 ) {
 #endif
             return false;
         }
@@ -123,8 +123,8 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
     // Set up smart pointers for signed and unsigned input buffer access.
     // Ought to be read-only (const), but this implementation appends
     // a few values to the end of the buffer (see further below).
-    fcBufS.setBuffer((sbyte*)input,inputLen);
-    fcBuf.setBuffer((ubyte*)input,inputLen);
+    fcBufS.setBuffer((int8_t*)input,inputLen);
+    fcBuf.setBuffer((uint8_t*)input,inputLen);
     
     // (NOTE) This next bit is just for convenience.
     //
@@ -134,7 +134,7 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
     // is in the address space of the FC module and thus allows using the
     // same smart pointers as throughout the rest of the code.
     _admin.offsets.silence = inputLen-sizeof(silenceData);
-    for (ubyte i=0; i<sizeof(silenceData); i++) {
+    for (uint8_t i=0; i<sizeof(silenceData); i++) {
         fcBuf[_admin.offsets.silence+i] = silenceData[i];
     }
 
@@ -154,20 +154,18 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
     cout << "Track table (sequencer): " << endl;
 #if defined(DEBUG_DUMP)
     dumpLines(fcBuf,_admin.offsets.trackTable,
-              readEndian(fcBuf[4],fcBuf[5],fcBuf[6],fcBuf[7]),
+              be32toh(*(uint32_t*)&fcBuf[4]),
               TRACKTAB_ENTRY_LENGTH);
 #endif
     cout << endl;
 #endif
 
     // At +8 is offset to pattern data.
-    _admin.offsets.patterns = readEndian(fcBuf[8],fcBuf[9],
-                                           fcBuf[10],fcBuf[11]);
+    _admin.offsets.patterns = be32toh(*(uint32_t*)&fcBuf[8]);
     // At +12 is length of patterns.
     // Divide by pattern length to get number of used patterns.
     // The editor is limited to 128 patterns.
-    _admin.usedPatterns = readEndian(fcBuf[12],fcBuf[13],
-                                      fcBuf[14],fcBuf[15])/PATTERN_LENGTH;
+    _admin.usedPatterns = be32toh(*(uint32_t*)&fcBuf[12])/PATTERN_LENGTH;
 #if defined(DEBUG)
     cout << "Patterns: " << hex << _admin.usedPatterns << endl;
 #if defined(DEBUG_DUMP)
@@ -177,13 +175,11 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
 #endif
 
     // At +16 is offset to first sound modulation sequence.
-    _admin.offsets.sndModSeqs = readEndian(fcBuf[16],fcBuf[17],
-                                            fcBuf[18],fcBuf[19]);
+    _admin.offsets.sndModSeqs = be32toh(*(uint32_t*)&fcBuf[16]);
     // At +20 is total length of sound modulation sequences.
     // Divide by sequence length to get number of used sequences.
     // Each sequence is 64 bytes long.
-    _admin.usedSndModSeqs = readEndian(fcBuf[20],fcBuf[21],
-                                        fcBuf[22],fcBuf[23])/64;
+    _admin.usedSndModSeqs = be32toh(*(uint32_t*)&fcBuf[20])/64;
 #if defined(DEBUG)
     cout << "Sound modulation sequences: "
         << hex << _admin.usedSndModSeqs << endl;
@@ -194,13 +190,11 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
 #endif
     
     // At +24 is offset to first volume modulation sequence.
-    _admin.offsets.volModSeqs = readEndian(fcBuf[24],fcBuf[25],
-                                            fcBuf[26],fcBuf[27]);
+    _admin.offsets.volModSeqs = be32toh(*(uint32_t*)&fcBuf[24]);
     // At +28 is total length of volume modulation sequences.
     // Divide by sequence length to get number of used sequences.
     // Each sequence is 64 bytes long.
-    _admin.usedVolModSeqs = readEndian(fcBuf[28],fcBuf[29],
-                                        fcBuf[30],fcBuf[31])/64;
+    _admin.usedVolModSeqs = be32toh(*(uint32_t*)&fcBuf[28])/64;
 #if defined(DEBUG)
     cout << "Volume modulation sequences: "
         << hex << _admin.usedVolModSeqs << endl;
@@ -214,9 +208,8 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
     cout << "Samples:" << endl;
 #endif
     // At +32 is module offset to start of samples.
-    udword sampleOffset = readEndian(fcBuf[32],fcBuf[33],
-                                     fcBuf[34],fcBuf[35]);
-    udword sampleHeader = FC14_SMPHEADERS_OFFSET;
+    uint32_t sampleOffset = be32toh(*(uint32_t*)&fcBuf[32]);
+    uint32_t sampleHeader = FC14_SMPHEADERS_OFFSET;
     // Max. 10 samples ($0-$9) or 10 sample-packs of 10 samples each.
     // Maximum sample length = 50000.
     // Previously: 32KB.
@@ -231,13 +224,10 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
     for (int sam = 0; sam < 10; sam++) {
         _sounds[sam].start = sampleOffset+fcBuf.tellBegin();
         // Sample length in words.
-        uword sampleLength = readEndian(fcBuf[sampleHeader],
-                                        fcBuf[sampleHeader+1]);
+        uint16_t sampleLength = be16toh(*(uint16_t*)&fcBuf[sampleHeader]);
         _sounds[sam].len =  sampleLength;
-        _sounds[sam].repOffs = readEndian(fcBuf[sampleHeader+2],
-                                                   fcBuf[sampleHeader+3]);
-        _sounds[sam].repLen = readEndian(fcBuf[sampleHeader+4],
-                                                  fcBuf[sampleHeader+5]);
+        _sounds[sam].repOffs = be16toh(*(uint16_t*)&fcBuf[sampleHeader+2]);
+        _sounds[sam].repLen = be16toh(*(uint16_t*)&fcBuf[sampleHeader+4]);
 
         // Safety treatment of "one-shot" samples.
         // 
@@ -267,7 +257,7 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
         sampleOffset += sampleLength;
         
         if (isFC14) {
-            udword pos = sampleOffset;
+            uint32_t pos = sampleOffset;
             // Make sure we do not erase the sample-pack ID "SSMP"
             // and check whether this is a one-shot sample.
             if (fcBuf[pos]!=0x53 && fcBuf[pos+1]!=0x53 &&
@@ -307,7 +297,7 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
     // 80 waveforms ($0a-$59), max $100 bytes length each.
     if (isSMOD) {
         // Old FC has built-in waveforms.
-        const ubyte* wavePtr = SMOD_waveforms;
+        const uint8_t* wavePtr = SMOD_waveforms;
         int infoIndex = 0;
         for (int wave = 0; wave < 47; wave++)
         {
@@ -328,14 +318,13 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
     }
     else {  //if (isFC14)
         // At +36 is module offset to start of waveforms.
-        udword waveOffset = readEndian(fcBuf[36],fcBuf[37],
-                                       fcBuf[38],fcBuf[39]);
+        uint32_t waveOffset = be32toh(*(uint32_t*)&fcBuf[36]);
         // Module offset to array of waveform lengths.
-        udword waveHeader = FC14_WAVEHEADERS_OFFSET;
+        uint32_t waveHeader = FC14_WAVEHEADERS_OFFSET;
         for (int wave = 0; wave < 80; wave++) {
             int sam = 10+wave;
             _sounds[sam].start = waveOffset+fcBuf.tellBegin();
-            ubyte waveLength = fcBuf[waveHeader++];
+            uint8_t waveLength = fcBuf[waveHeader++];
             waveOffset += waveLength;
             waveOffset += waveLength;
             _sounds[sam].len = waveLength;
@@ -372,13 +361,13 @@ void FC::restart(int startStep, int endStep) {
     // (NOTE) Some FC implementations instead count from 0 to 4.
 
     // At +4 is length of track table.
-    udword trackTabLen = readEndian(fcBuf[4],fcBuf[5],fcBuf[6],fcBuf[7]);
+    uint32_t trackTabLen = be32toh(*(uint32_t*)&fcBuf[4]);
 #if defined(DEBUG)
     cout << "trackTabLen = " << hex << setw(8) << setfill('0') << trackTabLen << endl;
 #endif
 
     off();
-    for (ubyte c=0; c<channels; c++) {
+    for (uint8_t c=0; c<channels; c++) {
         _CHdata[c].dmaMask = (1<<c);
         _CHdata[c].trackPos =
             _CHdata[c].pattPos = 0;
@@ -426,8 +415,8 @@ void FC::restart(int startStep, int endStep) {
         // RS = REPLAY SPEED
         
         // Read PT/TR/ST from track table.
-        udword trackTabPos = _CHdata[c].trackStart+_CHdata[c].trackPos;
-        uword pattern = fcBuf[trackTabPos++];  // PT
+        uint32_t trackTabPos = _CHdata[c].trackStart+_CHdata[c].trackPos;
+        uint16_t pattern = fcBuf[trackTabPos++];  // PT
         _CHdata[c].pattStart = _admin.offsets.patterns+(pattern<<6);
         _CHdata[c].transpose = fcBuf[trackTabPos++];  // TR
         _CHdata[c].soundTranspose = fcBufS[trackTabPos];   // ST
@@ -476,7 +465,7 @@ void FC::run()
     // audio channel to turn on.
     _admin.dmaFlags = 0;
 
-    for (ubyte c=0; c<channels; c++) {
+    for (uint8_t c=0; c<channels; c++) {
         // Start or update instrument.
         processModulation(_CHdata[c]);
         
@@ -496,7 +485,7 @@ void FC::run()
  
     // Finally decide which audio channels to start.
     // This could be moved into previous loop.
-    for (ubyte c=0; c<channels; c++) {
+    for (uint8_t c=0; c<channels; c++) {
         // Enable channel? Else, do not touch it.
         if ((_admin.dmaFlags&(1<<c)) != 0) {
             _CHdata[c].ch->on();
@@ -518,7 +507,7 @@ void FC::killChannel(CHdata& CHXdata) {
 void FC::nextNote(CHdata& CHXdata)
 {
     // Get offset to (or address of) current pattern position.
-    udword pattOffs = CHXdata.pattStart+CHXdata.pattPos;
+    uint32_t pattOffs = CHXdata.pattStart+CHXdata.pattPos;
 
     // Check for pattern end or whether pattern BREAK
     // command is set.
@@ -545,7 +534,7 @@ void FC::nextNote(CHdata& CHXdata)
         
         // Advance one step in track table.
         CHXdata.trackPos += TRACKTAB_ENTRY_LENGTH;  // 0x000d
-        udword trackOffs = CHXdata.trackStart+CHXdata.trackPos;
+        uint32_t trackOffs = CHXdata.trackStart+CHXdata.trackPos;
         
         // (BUG-FIX) Some FC players here apply a normal
         // compare-if-equal which is not accurate enough and
@@ -579,14 +568,14 @@ void FC::nextNote(CHdata& CHXdata)
         if (++_admin.RScount == 5)
         {
             _admin.RScount = 1;
-            ubyte newSpeed = fcBuf[trackOffs+12];  // RS (replay speed)
+            uint8_t newSpeed = fcBuf[trackOffs+12];  // RS (replay speed)
             if (newSpeed != 0)  // 0 would be underflow
             {
                 _admin.count = _admin.speed = newSpeed;
             }
         }
 
-        uword pattern = fcBuf[trackOffs++];  // PT
+        uint16_t pattern = fcBuf[trackOffs++];  // PT
         CHXdata.transpose = fcBufS[trackOffs++];
         CHXdata.soundTranspose = fcBufS[trackOffs++];
         
@@ -602,7 +591,7 @@ void FC::nextNote(CHdata& CHXdata)
         cout << endl;
         cout << "Step = " << hex << setw(4) << setfill('0') << CHXdata.trackPos/ TRACKTAB_ENTRY_LENGTH;
         cout << " | " << hex << setw(5) << setfill('0') << (int)CHXdata.trackStart << ", " << (int)(CHXdata.trackStart+CHXdata.trackPos) << ", " << (int)CHXdata.trackEnd << endl;
-        udword tmp = CHXdata.trackStart+CHXdata.trackPos;
+        uint32_t tmp = CHXdata.trackStart+CHXdata.trackPos;
         for (int t = 0; t < 13; ++t)
             cout << hex << setw(2) << setfill('0') << (int)fcBuf[tmp++] << ' ';
         cout << endl;
@@ -617,8 +606,8 @@ void FC::nextNote(CHdata& CHXdata)
 
     // Process pattern entry.
     
-    ubyte note = fcBuf[pattOffs++];
-    ubyte info1 = fcBuf[pattOffs];  // info byte #1
+    uint8_t note = fcBuf[pattOffs++];
+    uint8_t info1 = fcBuf[pattOffs];  // info byte #1
     
     if (note != 0)
     {
@@ -640,7 +629,7 @@ void FC::nextNote(CHdata& CHXdata)
         // Pattern offset stills points to info byte #1.
         // Get instrument/volModSeq number from info byte #1
         // and add sound transpose value from track table.
-        uword sound = (fcBuf[pattOffs]&0x3f)+CHXdata.soundTranspose;
+        uint16_t sound = (fcBuf[pattOffs]&0x3f)+CHXdata.soundTranspose;
         //
         // (FC14 BUG-FIX) Better mask here to take care of overflow.
         //
@@ -649,7 +638,7 @@ void FC::nextNote(CHdata& CHXdata)
         // (NOTE) Some FC players here put pattern info byte #1
         // into an unused byte variable at structure offset 9.
         
-        udword seqOffs;  // the modulation sequence for this sound
+        uint32_t seqOffs;  // the modulation sequence for this sound
         
         if (sound > (_admin.usedVolModSeqs-1))
         {
@@ -713,7 +702,7 @@ void FC::nextNote(CHdata& CHXdata)
 // to simulate JMP instructions in the original player code without
 // making use of ``goto''.
 
-inline void FC::setWave(CHdata& CHXdata, ubyte num)
+inline void FC::setWave(CHdata& CHXdata, uint8_t num)
 {
     CHXdata.pSampleStart = _sounds[num].start;
     CHXdata.ch->paula.start = _sounds[num].start;
@@ -755,7 +744,7 @@ void FC::readModCommand_recurse(CHdata& CHXdata)
         return;
     }
 
-    udword seqOffs = CHXdata.sndSeq+CHXdata.sndSeqPos;
+    uint32_t seqOffs = CHXdata.sndSeq+CHXdata.sndSeqPos;
 
     // (NOTE) After each command (except LOOP, END, SUSTAIN,
     // and NEWVIB) follows a transpose value.
@@ -807,35 +796,31 @@ void FC::readModCommand_recurse(CHdata& CHXdata)
         // Enable channel later.
         _admin.dmaFlags |= CHXdata.dmaMask;
         
-        uword i = fcBuf[seqOffs+1];  // sample/pack nr.
+        uint16_t i = fcBuf[seqOffs+1];  // sample/pack nr.
         if (i < 10)  // sample or waveform?
         {
-            udword sndOffs = _sounds[i].start - fcBuf.tellBegin();
+            uint32_t sndOffs = _sounds[i].start - fcBuf.tellBegin();
             // "SSMP"? sample-pack?
             if (fcBuf[sndOffs]==0x53 && fcBuf[sndOffs+1]==0x53 &&
                 fcBuf[sndOffs+2]==0x4D && fcBuf[sndOffs+3]==0x50)
             {
                 sndOffs += 4;
                 // Skip header and 10*2 info blocks of size 16.
-                udword smpStart = sndOffs+320;
+                uint32_t smpStart = sndOffs+320;
                 i = fcBuf[seqOffs+2];  // sample nr.
                 i <<= 4;  // *16 (block size)
                 sndOffs += i;
-                smpStart += readEndian(fcBuf[sndOffs],fcBuf[sndOffs+1],
-                                 fcBuf[sndOffs+2],fcBuf[sndOffs+3]);
+                smpStart += be32toh(*(uint32_t*)&fcBuf[sndOffs]);
                 CHXdata.pSampleStart = smpStart+fcBuf.tellBegin();
                 CHXdata.ch->paula.start = CHXdata.pSampleStart;
-                CHXdata.ch->paula.length = readEndian(fcBuf[sndOffs+4],
-                                                         fcBuf[sndOffs+5]);
+                CHXdata.ch->paula.length = be16toh(*(uint16_t*)&fcBuf[sndOffs+4]);
                 CHXdata.ch->takeNextBuf();
                 
                 // (FC14 BUG-FIX): Players set period here by accident.
                 // m68k code move.l 4(a2),4(a3), but 6(a3) is period.
                 
-                CHXdata.repeatOffset = readEndian(fcBuf[sndOffs+6],
-                                                     fcBuf[sndOffs+7]);
-                CHXdata.repeatLength = readEndian(fcBuf[sndOffs+8],
-                                                     fcBuf[sndOffs+9]);
+                CHXdata.repeatOffset = be16toh(*(uint16_t*)&fcBuf[sndOffs+6]);
+                CHXdata.repeatLength = be16toh(*(uint16_t*)&fcBuf[sndOffs+8]);
                 if (CHXdata.repeatLength == 1)
                 {
                     // Erase first word behind sample to avoid beeping
@@ -859,7 +844,7 @@ void FC::readModCommand_recurse(CHdata& CHXdata)
 
     else if (fcBuf[seqOffs] == SNDMOD_NEWSEQ)
     {
-        uword seq = fcBuf[seqOffs+1];
+        uint16_t seq = fcBuf[seqOffs+1];
         CHXdata.sndSeq = _admin.offsets.sndModSeqs+(seq<<6);
         CHXdata.sndSeqPos = 0;
         readModCommand_recurse(CHXdata);
@@ -966,8 +951,8 @@ void FC::processPerVol(CHdata& CHXdata)
             {
                 readNextVal = false;
                     
-                udword seqOffs = CHXdata.volSeq+CHXdata.volSeqPos;
-                ubyte command = fcBuf[seqOffs];
+                uint32_t seqOffs = CHXdata.volSeq+CHXdata.volSeqPos;
+                uint8_t command = fcBuf[seqOffs];
 
                 switch (command)
                 {
@@ -1029,7 +1014,7 @@ void FC::processPerVol(CHdata& CHXdata)
     
     // Now determine note and period value to play.
     
-    sdword tmp0, tmp1;
+    int32_t tmp0, tmp1;
 
     tmp0 = CHXdata.seqTranspose;
     if (tmp0 >= 0)
@@ -1063,9 +1048,9 @@ void FC::processPerVol(CHdata& CHXdata)
     
     if (CHXdata.vibDelay == 0)
     {
-        uword noteTableOffset = tmp1;  // tmp1 is note*2;
+        uint16_t noteTableOffset = tmp1;  // tmp1 is note*2;
     
-        sword vibDelta = CHXdata.vibAmpl;
+        int16_t vibDelta = CHXdata.vibAmpl;
         vibDelta <<= 1;  // pos/neg amplitude delta
     
         // vibFlag bit 5: 0 => vibrato down, 1 => vibrato up
@@ -1138,7 +1123,7 @@ void FC::processPerVol(CHdata& CHXdata)
     CHXdata.portDelayFlag ^= 0xff;  // = NOT
     if (isSMOD || CHXdata.portDelayFlag!=0)
     {
-        sbyte param = CHXdata.portaInfo;
+        int8_t param = CHXdata.portaInfo;
         if (param != 0)
         {
             if (param > 0x1f)  // > 0x20 = portamento down
@@ -1159,7 +1144,7 @@ void FC::processPerVol(CHdata& CHXdata)
         if (CHXdata.pitchBendTime != 0)
         {
             --CHXdata.pitchBendTime;
-            sbyte speed = CHXdata.pitchBendSpeed;
+            int8_t speed = CHXdata.pitchBendSpeed;
             if (speed != 0)
             {
                 CHXdata.portaOffs -= speed;

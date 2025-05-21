@@ -20,7 +20,7 @@ LamePaulaMixer::LamePaulaMixer()
 {
     // Start with no voice ptrs.
     _voices = 0;
-    for (ubyte v=0; v<_maxVoices; v++) {
+    for (uint8_t v=0; v<_maxVoices; v++) {
         _voice[v] = 0;
     }
 }
@@ -32,7 +32,7 @@ LamePaulaMixer::~LamePaulaMixer() {
 
 
 void LamePaulaMixer::end() {
-    for (ubyte v=0; v<_voices; v++) {
+    for (uint8_t v=0; v<_voices; v++) {
         delete _voice[v];
         _voice[v] = 0;
     }
@@ -40,7 +40,7 @@ void LamePaulaMixer::end() {
 }
 
 
-PaulaVoice* LamePaulaMixer::getVoice(ubyte n) {
+PaulaVoice* LamePaulaMixer::getVoice(uint8_t n) {
     if (n < _maxVoices) {
         return _voice[n];
     }
@@ -50,15 +50,15 @@ PaulaVoice* LamePaulaMixer::getVoice(ubyte n) {
 }
 
 
-void LamePaulaMixer::init(ubyte voices) {
+void LamePaulaMixer::init(uint8_t voices) {
     if ((voices <= _maxVoices) && (voices != _voices)) {
         end();
         _voices = voices;
-        for (ubyte v=0; v<_voices; v++) {
+        for (uint8_t v=0; v<_voices; v++) {
             _voice[v] = new LamePaulaVoice;
         }
     }
-    for (ubyte v=0; v<_voices; v++) {
+    for (uint8_t v=0; v<_voices; v++) {
         LamePaulaVoice* pv = _voice[v];
         pv->start = &emptySample;
         pv->end = &emptySample+1;
@@ -74,7 +74,7 @@ void LamePaulaMixer::init(ubyte voices) {
 }
 
 
-void LamePaulaMixer::init(udword freq, ubyte bits, ubyte channels, uword zero)
+void LamePaulaMixer::init(uint32_t freq, uint8_t bits, uint8_t channels, uint16_t zero)
 {
     _pcmFreq = freq;
     _bitsPerSample = bits;
@@ -108,32 +108,32 @@ void LamePaulaMixer::init(udword freq, ubyte bits, ubyte channels, uword zero)
         }
     }
     
-	uword ui;
+	uint16_t ui;
     long si;
-	ubyte voicesPerChannel = _voices/_channels;
+	uint8_t voicesPerChannel = _voices/_channels;
 
     // Input samples: 80,81,82,...,FE,FF,00,01,02,...,7E,7F
     // Array: 00/x, 01/x, 02/x,...,7E/x,7F/x,80/x,81/x,82/x,...,FE/x/,FF/x 
     ui = 0;
     si = 0;
     while (si++ < 128) {
-		mix8[ui++] = (sbyte)(si/voicesPerChannel);
+		mix8[ui++] = (int8_t)(si/voicesPerChannel);
     }
     si = -128;
     while (si++ < 0) {
-		mix8[ui++] = (sbyte)(si/voicesPerChannel);
+		mix8[ui++] = (int8_t)(si/voicesPerChannel);
     }
     // Input samples: 80,81,82,...,FE,FF,00,01,02,...,7E,7F
     // Array: 0/x, 100/x, 200/x, ..., FF00/x
     ui = 0;
     si = 0;
     while (si < 128*256) {
-		mix16[ui++] = (sword)(si/voicesPerChannel);
+		mix16[ui++] = (int16_t)(si/voicesPerChannel);
         si += 256;
     }
     si = -128*256;
     while (si < 0) {
-		mix16[ui++] = (sword)(si/voicesPerChannel);
+		mix16[ui++] = (int16_t)(si/voicesPerChannel);
         si += 256;
     }
 }
@@ -146,14 +146,14 @@ void LamePaulaMixer::setReplayingSpeed() {
 }
 
 
-void LamePaulaMixer::setBpm(uword bpm) {
-    uword callsPerSecond = (bpm * 2) / 5;
+void LamePaulaMixer::setBpm(uint16_t bpm) {
+    uint16_t callsPerSecond = (bpm * 2) / 5;
     samples = ( samplesOrg = _pcmFreq / callsPerSecond );
     samplesPnt = (( _pcmFreq % callsPerSecond ) * 65536 ) / callsPerSecond;  
     samplesAdd = 0; 
 }
 
-unsigned long int LamePaulaMixer::fillBuffer(void* buffer, udword bufferLen, PaulaPlayer *player) {
+unsigned long int LamePaulaMixer::fillBuffer(void* buffer, uint32_t bufferLen, PaulaPlayer *player) {
     // Both, 16-bit and stereo samples take more memory.
     // Hence fewer samples fit into the buffer.
     bufferLen >>= bufferScale;
@@ -172,11 +172,11 @@ unsigned long int LamePaulaMixer::fillBuffer(void* buffer, udword bufferLen, Pau
         if ( toFill == 0 ) {
             player->run();
 
-            udword temp = ( samplesAdd += samplesPnt );
+            uint32_t temp = ( samplesAdd += samplesPnt );
             samplesAdd = temp & 0xFFFF;
             toFill = samples + ( temp > 65535 );
 	  
-            for (ubyte v=0; v<_voices; v++) {
+            for (uint8_t v=0; v<_voices; v++) {
                 LamePaulaVoice *pv = _voice[v];
                 if ( pv->paula.period != pv->curPeriod ) {
                     pv->curPeriod = pv->paula.period;
@@ -196,13 +196,13 @@ unsigned long int LamePaulaMixer::fillBuffer(void* buffer, udword bufferLen, Pau
 }
 
 
-void* LamePaulaMixer::fill8bitMono(void* buffer, udword numberOfSamples)
+void* LamePaulaMixer::fill8bitMono(void* buffer, uint32_t numberOfSamples)
 {
-    ubyte* buffer8bit = static_cast<ubyte*>(buffer);
-    for (ubyte v=0; v<_voices; v++) {
-        buffer8bit = static_cast<ubyte*>(buffer);
+    uint8_t* buffer8bit = static_cast<uint8_t*>(buffer);
+    for (uint8_t v=0; v<_voices; v++) {
+        buffer8bit = static_cast<uint8_t*>(buffer);
         LamePaulaVoice *pv = _voice[v];
-        for (udword n = numberOfSamples; n>0; n--) {
+        for (uint32_t n = numberOfSamples; n>0; n--) {
             if (v == 0) {
                 *buffer8bit = zero8bit;
             }
@@ -228,14 +228,14 @@ void* LamePaulaMixer::fill8bitMono(void* buffer, udword numberOfSamples)
 }
 
 
-void* LamePaulaMixer::fill8bitStereo( void* buffer, udword numberOfSamples )
+void* LamePaulaMixer::fill8bitStereo( void* buffer, uint32_t numberOfSamples )
 {
-    ubyte* buffer8bit = (static_cast<ubyte*>(buffer))+1;
-    for (ubyte v=1; v<_voices; v+=2)
+    uint8_t* buffer8bit = (static_cast<uint8_t*>(buffer))+1;
+    for (uint8_t v=1; v<_voices; v+=2)
     {
-        buffer8bit = (static_cast<ubyte*>(buffer))+1;
+        buffer8bit = (static_cast<uint8_t*>(buffer))+1;
         LamePaulaVoice *pv = _voice[v];
-        for (udword n = numberOfSamples; n>0; n--) {
+        for (uint32_t n = numberOfSamples; n>0; n--) {
             if (v == 1) {
                 *buffer8bit = zero8bit;
             }
@@ -257,11 +257,11 @@ void* LamePaulaMixer::fill8bitStereo( void* buffer, udword numberOfSamples )
             buffer8bit += 2;
         }
     }
-    buffer8bit = static_cast<ubyte*>(buffer);
-    for (ubyte v=0; v<_voices; v+=2) {
-        buffer8bit = static_cast<ubyte*>(buffer);
+    buffer8bit = static_cast<uint8_t*>(buffer);
+    for (uint8_t v=0; v<_voices; v+=2) {
+        buffer8bit = static_cast<uint8_t*>(buffer);
         LamePaulaVoice *pv = _voice[v];
-        for (udword n = numberOfSamples; n>0; n--) {
+        for (uint32_t n = numberOfSamples; n>0; n--) {
             if (v == 0) {
                 *buffer8bit = zero8bit;
             }
@@ -287,13 +287,13 @@ void* LamePaulaMixer::fill8bitStereo( void* buffer, udword numberOfSamples )
 }
 
 
-void* LamePaulaMixer::fill16bitMono( void* buffer, udword numberOfSamples )
+void* LamePaulaMixer::fill16bitMono( void* buffer, uint32_t numberOfSamples )
 {
-    sword* buffer16bit = static_cast<sword*>(buffer);
-    for (ubyte v=0; v<_voices; v++) {
-        buffer16bit = static_cast<sword*>(buffer);
+    int16_t* buffer16bit = static_cast<int16_t*>(buffer);
+    for (uint8_t v=0; v<_voices; v++) {
+        buffer16bit = static_cast<int16_t*>(buffer);
         LamePaulaVoice *pv = _voice[v];
-        for (udword n = numberOfSamples; n>0; n--) {
+        for (uint32_t n = numberOfSamples; n>0; n--) {
             if (v == 0) {
                 *buffer16bit = zero16bit;
             }
@@ -319,13 +319,13 @@ void* LamePaulaMixer::fill16bitMono( void* buffer, udword numberOfSamples )
 }
 
 
-void* LamePaulaMixer::fill16bitStereo( void *buffer, udword numberOfSamples )
+void* LamePaulaMixer::fill16bitStereo( void *buffer, uint32_t numberOfSamples )
 {
-    sword* buffer16bit = (static_cast<sword*>(buffer))+1;
-    for (ubyte v=1; v<_voices; v+=2 ) {
-        buffer16bit = (static_cast<sword*>(buffer))+1;
+    int16_t* buffer16bit = (static_cast<int16_t*>(buffer))+1;
+    for (uint8_t v=1; v<_voices; v+=2 ) {
+        buffer16bit = (static_cast<int16_t*>(buffer))+1;
         LamePaulaVoice *pv = _voice[v];
-        for (udword n = numberOfSamples; n>0; n--) {
+        for (uint32_t n = numberOfSamples; n>0; n--) {
             if (v == 1) {
                 *buffer16bit = zero16bit;
             }
@@ -348,11 +348,11 @@ void* LamePaulaMixer::fill16bitStereo( void *buffer, udword numberOfSamples )
             buffer16bit += 2;
         }
     }
-    buffer16bit = static_cast<sword*>(buffer);
-    for (ubyte v=0; v<_voices; v+=2 ) {
-        buffer16bit = static_cast<sword*>(buffer);
+    buffer16bit = static_cast<int16_t*>(buffer);
+    for (uint8_t v=0; v<_voices; v+=2 ) {
+        buffer16bit = static_cast<int16_t*>(buffer);
         LamePaulaVoice *pv = _voice[v];
-        for (udword n = numberOfSamples; n>0; n--) {
+        for (uint32_t n = numberOfSamples; n>0; n--) {
             if (v == 0) {
                 *buffer16bit = zero16bit;
             }

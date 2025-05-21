@@ -9,7 +9,7 @@
 #include <iomanip>
 using namespace std;
 
-void dumpLines(smartPtr<ubyte>& fcBuf, udword startOffset, sdword length, int blockLen) {
+void dumpLines(smartPtr<uint8_t>& fcBuf, uint32_t startOffset, int32_t length, int blockLen) {
     int num = 0;
     while (length > 0) {
         cout << "(0x" << hex << setw(2) << setfill('0') << num << "): ";
@@ -30,7 +30,7 @@ void dumpLines(smartPtr<ubyte>& fcBuf, udword startOffset, sdword length, int bl
     };
 }
 
-void dumpBlocks(smartPtr<ubyte>& fcBuf, udword startOffset, sdword length, int blockLen) {
+void dumpBlocks(smartPtr<uint8_t>& fcBuf, uint32_t startOffset, int32_t length, int blockLen) {
     int num = 0;
     while (length > 0) {
         cout << "(0x" << hex << setw(2) << setfill('0') << num << "):" << endl;

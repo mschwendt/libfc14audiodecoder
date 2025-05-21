@@ -28,18 +28,18 @@ class LamePaulaVoice : public PaulaVoice
     bool isOn;
     bool looping;  // whether to loop sample buffer continously (PAULA emu)
     
-    const ubyte* start;
-    const ubyte* end;
-    udword length;
+    const uint8_t* start;
+    const uint8_t* end;
+    uint32_t length;
     
-    const ubyte* repeatStart;
-    const ubyte* repeatEnd;
-    udword repeatLength;
+    const uint8_t* repeatStart;
+    const uint8_t* repeatEnd;
+    uint32_t repeatLength;
     
-    uword curPeriod;
-    udword stepSpeed;
-    udword stepSpeedPnt;
-    udword stepSpeedAddPnt;
+    uint16_t curPeriod;
+    uint32_t stepSpeed;
+    uint32_t stepSpeedPnt;
+    uint32_t stepSpeedAddPnt;
 };
 
 class LamePaulaMixer : public PaulaMixer
@@ -47,52 +47,52 @@ class LamePaulaMixer : public PaulaMixer
  public:
     LamePaulaMixer();
     ~LamePaulaMixer();
-    void init(udword freq, ubyte bits, ubyte channels, uword zero);
-    void init(ubyte voices);
-    PaulaVoice* getVoice(ubyte); 
+    void init(uint32_t freq, uint8_t bits, uint8_t channels, uint16_t zero);
+    void init(uint8_t voices);
+    PaulaVoice* getVoice(uint8_t); 
 
-    unsigned long int fillBuffer(void* buffer, udword bufferLen, PaulaPlayer *player);
+    unsigned long int fillBuffer(void* buffer, uint32_t bufferLen, PaulaPlayer *player);
 
  private:
     void setReplayingSpeed();
-    void setBpm(uword bpm);
+    void setBpm(uint16_t bpm);
     void end();
 
-    void* (LamePaulaMixer::*_fillFunc)(void*, udword);
+    void* (LamePaulaMixer::*_fillFunc)(void*, uint32_t);
 
-    void* fill8bitMono(void*, udword);
-    void* fill8bitStereo(void*, udword);
-    void* fill16bitMono(void*, udword);
-    void* fill16bitStereo(void*, udword);
+    void* fill8bitMono(void*, uint32_t);
+    void* fill8bitStereo(void*, uint32_t);
+    void* fill16bitMono(void*, uint32_t);
+    void* fill16bitStereo(void*, uint32_t);
 
     static const int _maxVoices = 32;
     LamePaulaVoice* _voice[_maxVoices];
     int _voices;
 
-    udword _pcmFreq;
-    ubyte _bitsPerSample;
-    ubyte _channels;
-    uword _zero;
+    uint32_t _pcmFreq;
+    uint8_t _bitsPerSample;
+    uint8_t _channels;
+    uint16_t _zero;
 
-    static const udword AMIGA_CLOCK_PAL = 3546895;
-    static const udword AMIGA_CLOCK_NTSC = 3579546;
-    const udword AMIGA_CLOCK;
+    static const uint32_t AMIGA_CLOCK_PAL = 3546895;
+    static const uint32_t AMIGA_CLOCK_NTSC = 3579546;
+    const uint32_t AMIGA_CLOCK;
 
-    sbyte mix8[256];
-    sword mix16[256];
+    int8_t mix8[256];
+    int16_t mix16[256];
 
-    ubyte zero8bit;   // ``zero''-sample
-    uword zero16bit;  // either signed or unsigned
+    uint8_t zero8bit;   // ``zero''-sample
+    uint16_t zero16bit;  // either signed or unsigned
     
-    ubyte bufferScale;
+    uint8_t bufferScale;
     
-    udword samplesAdd;
-    udword samplesPnt;
-    uword samples, samplesOrg;
+    uint32_t samplesAdd;
+    uint32_t samplesPnt;
+    uint16_t samples, samplesOrg;
     
-    udword toFill;
+    uint32_t toFill;
     
-    ubyte emptySample;
+    uint8_t emptySample;
 };
 
 #endif  // LAMEPAULA_H

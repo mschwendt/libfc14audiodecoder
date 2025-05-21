@@ -19,8 +19,6 @@
 
 #include <string>
 
-#include "MyTypes.h"
-#include "MyEndian.h"
 #include "SmartPtr.h"
 #include "Paula.h"
 
@@ -31,7 +29,7 @@ class FC : public PaulaPlayer {
 
     void setMixer(PaulaMixer*);
     bool isOurData(void*,unsigned long int);
-    bool init(void*,udword,int=0,int=0);
+    bool init(void*,uint32_t,int=0,int=0);
     void run();
     void restart(int=0,int=0);
     void off();
@@ -45,32 +43,32 @@ class FC : public PaulaPlayer {
     static const std::string FC14_FORMAT_NAME;
     static const std::string UNKNOWN_FORMAT_NAME;
 
-    static const uword SMOD_SONGTAB_OFFSET = 0x0064;      // 100
+    static const uint16_t SMOD_SONGTAB_OFFSET = 0x0064;      // 100
 
-    static const uword FC14_SMPHEADERS_OFFSET = 0x0028;   // 40
-    static const uword FC14_WAVEHEADERS_OFFSET = 0x0064;  // 100
-    static const uword FC14_SONGTAB_OFFSET = 0x00b4;      // 180
+    static const uint16_t FC14_SMPHEADERS_OFFSET = 0x0028;   // 40
+    static const uint16_t FC14_WAVEHEADERS_OFFSET = 0x0064;  // 100
+    static const uint16_t FC14_SONGTAB_OFFSET = 0x00b4;      // 180
 
-    static const uword TRACKTAB_ENTRY_LENGTH = 0x000d;    // 3*4+1
-    static const uword PATTERN_LENGTH = 0x0040;           // 32*2
-    static const ubyte PATTERN_BREAK = 0x49;
+    static const uint16_t TRACKTAB_ENTRY_LENGTH = 0x000d;    // 3*4+1
+    static const uint16_t PATTERN_LENGTH = 0x0040;           // 32*2
+    static const uint8_t PATTERN_BREAK = 0x49;
 
-    static const ubyte SEQ_END = 0xE1;
+    static const uint8_t SEQ_END = 0xE1;
 
-    static const ubyte SNDMOD_LOOP = 0xE0;
-    static const ubyte SNDMOD_END = SEQ_END;
-    static const ubyte SNDMOD_SETWAVE = 0xE2;
-    static const ubyte SNDMOD_CHANGEWAVE = 0xE4;
-    static const ubyte SNDMOD_NEWVIB = 0xE3;
-    static const ubyte SNDMOD_SUSTAIN = 0xE8;
-    static const ubyte SNDMOD_NEWSEQ = 0xE7;
-    static const ubyte SNDMOD_SETPACKWAVE = 0xE9;
-    static const ubyte SNDMOD_PITCHBEND = 0xEA;
+    static const uint8_t SNDMOD_LOOP = 0xE0;
+    static const uint8_t SNDMOD_END = SEQ_END;
+    static const uint8_t SNDMOD_SETWAVE = 0xE2;
+    static const uint8_t SNDMOD_CHANGEWAVE = 0xE4;
+    static const uint8_t SNDMOD_NEWVIB = 0xE3;
+    static const uint8_t SNDMOD_SUSTAIN = 0xE8;
+    static const uint8_t SNDMOD_NEWSEQ = 0xE7;
+    static const uint8_t SNDMOD_SETPACKWAVE = 0xE9;
+    static const uint8_t SNDMOD_PITCHBEND = 0xEA;
 
-    static const ubyte ENVELOPE_LOOP = 0xE0;
-    static const ubyte ENVELOPE_END = SEQ_END;
-    static const ubyte ENVELOPE_SUSTAIN = 0xE8;
-    static const ubyte ENVELOPE_SLIDE = 0xEA;
+    static const uint8_t ENVELOPE_LOOP = 0xE0;
+    static const uint8_t ENVELOPE_END = SEQ_END;
+    static const uint8_t ENVELOPE_SUSTAIN = 0xE8;
+    static const uint8_t ENVELOPE_SLIDE = 0xEA;
 
     static const int channels = 4;
 
@@ -80,36 +78,36 @@ class FC : public PaulaPlayer {
  private:
     PaulaVoice _dummyVoices[channels];
 
-    ubyte *input;
-    udword inputLen;
+    uint8_t *input;
+    uint32_t inputLen;
 
-    smartPtr<ubyte> fcBuf;   // for safe unsigned access
-    smartPtr<sbyte> fcBufS;  // for safe signed access
+    smartPtr<uint8_t> fcBuf;   // for safe unsigned access
+    smartPtr<int8_t> fcBufS;  // for safe signed access
 
     // This array will be moved behind the input file. So don't forget
     // to allocate additional sizeof(..) bytes.
-    static const ubyte silenceData[8];
+    static const uint8_t silenceData[8];
 
     // Index is AND 0x7f. Table is longer.
-    static const uword periods[(5+6)*12+4];
+    static const uint16_t periods[(5+6)*12+4];
 
-    static const uword SMOD_waveInfo[47*4];
-    static const ubyte SMOD_waveforms[];
+    static const uint16_t SMOD_waveInfo[47*4];
+    static const uint8_t SMOD_waveforms[];
 
     struct Admin {
-        uword dmaFlags;  // which audio channels to turn on (AMIGA related)
-        ubyte count;     // speed count
-        ubyte speed;     // speed
-        ubyte RScount;
+        uint16_t dmaFlags;  // which audio channels to turn on (AMIGA related)
+        uint8_t count;     // speed count
+        uint8_t speed;     // speed
+        uint8_t RScount;
         bool initialized;  // true => restartable
         bool isEnabled;    // player on => true, else false
     
         struct _moduleOffsets {
-            udword trackTable;
-            udword patterns;
-            udword sndModSeqs;
-            udword volModSeqs;
-            udword silence;
+            uint32_t trackTable;
+            uint32_t patterns;
+            uint32_t sndModSeqs;
+            uint32_t volModSeqs;
+            uint32_t silence;
         } offsets;
 
         int usedPatterns;
@@ -118,8 +116,8 @@ class FC : public PaulaPlayer {
     } _admin;
 
     struct Sound {
-        const ubyte* start;
-        uword len, repOffs, repLen;
+        const uint8_t* start;
+        uint16_t len, repOffs, repLen;
         // rest was place-holder (6 bytes)
     };
     // 10 samples/sample-packs
@@ -130,50 +128,50 @@ class FC : public PaulaPlayer {
     {
         PaulaVoice *ch;  // paula and mixer interface
     
-        uword dmaMask;
+        uint16_t dmaMask;
     
-        udword trackStart;     // track/step pattern table
-        udword trackEnd;
-        uword trackPos;
+        uint32_t trackStart;     // track/step pattern table
+        uint32_t trackEnd;
+        uint16_t trackPos;
 
-        udword pattStart;
-        uword pattPos;
+        uint32_t pattStart;
+        uint16_t pattPos;
     
-        sbyte transpose;       // TR
-        sbyte soundTranspose;  // ST
-        sbyte seqTranspose;    // from sndModSeq
+        int8_t transpose;       // TR
+        int8_t soundTranspose;  // ST
+        int8_t seqTranspose;    // from sndModSeq
     
-        ubyte noteValue;
+        uint8_t noteValue;
     
-        sbyte pitchBendSpeed;
-        ubyte pitchBendTime, pitchBendDelayFlag;
+        int8_t pitchBendSpeed;
+        uint8_t pitchBendTime, pitchBendDelayFlag;
     
-        ubyte portaInfo, portDelayFlag;
-        sword portaOffs;
+        uint8_t portaInfo, portDelayFlag;
+        int16_t portaOffs;
     
-        udword volSeq;
-        uword volSeqPos;
+        uint32_t volSeq;
+        uint16_t volSeqPos;
     
-        ubyte volSlideSpeed, volSlideTime, volSustainTime,
+        uint8_t volSlideSpeed, volSlideTime, volSustainTime,
             volSlideDelayFlag;
     
-        ubyte envelopeSpeed, envelopeCount;
+        uint8_t envelopeSpeed, envelopeCount;
     
-        udword sndSeq;
-        uword sndSeqPos;
+        uint32_t sndSeq;
+        uint16_t sndSeqPos;
     
-        ubyte sndModSustainTime;
+        uint8_t sndModSustainTime;
     
-        ubyte vibFlag, vibDelay, vibSpeed,
+        uint8_t vibFlag, vibDelay, vibSpeed,
             vibAmpl, vibCurOffs;
     
-        sbyte volume;
-        uword period;
+        int8_t volume;
+        uint16_t period;
     
-        const ubyte* pSampleStart;
-        uword repeatOffset;
-        uword repeatLength;
-        uword repeatDelay;
+        const uint8_t* pSampleStart;
+        uint16_t repeatOffset;
+        uint16_t repeatLength;
+        uint16_t repeatDelay;
     };
 
     struct CHdata _CHdata[channels];
@@ -184,7 +182,7 @@ class FC : public PaulaPlayer {
     void readModCommand(CHdata&);
     void readModCommand_recurse(CHdata&);
     void processPerVol(CHdata&);
-    inline void setWave(CHdata&, ubyte num);
+    inline void setWave(CHdata&, uint8_t num);
     inline void readSeqTranspose(CHdata&);
     void volSlide(CHdata&);
 };

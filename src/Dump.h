@@ -6,10 +6,9 @@
 #ifndef DUMP_H
 #define DUMP_H
 
-#include "MyTypes.h"
-#include "SmartPtr.h"
+#include "common.h"
 
-void dumpBlocks(smartPtr<ubyte>& fcBuf, udword startOffset, sdword length, int blockLen);
-void dumpLines(smartPtr<ubyte>& fcBuf, udword startOffset, sdword length, int blockLen);
+void dumpBlocks(smartPtr<uint8_t>& fcBuf, uint32_t startOffset, int32_t length, int blockLen);
+void dumpLines(smartPtr<uint8_t>& fcBuf, uint32_t startOffset, int32_t length, int blockLen);
 
 #endif  // DUMP_H

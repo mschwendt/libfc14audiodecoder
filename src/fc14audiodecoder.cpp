@@ -41,7 +41,12 @@ void fc14dec_delete(void* ptr) {
 
 int fc14dec_detect(void* ptr, void* data, unsigned long int length) {
     FC14_DECLARE_DECODER;
-    return p->decoder.isOurData(data,length) ? 0 : 1;
+    if(p->decoder.isOurData(data,length))
+    {
+        if(p->decoder.isSMOD) return -1;
+        if(p->decoder.isFC14) return  0;
+    }
+    return 1;
 }
 
 int fc14dec_init(void* ptr, void* data, unsigned long int length) {

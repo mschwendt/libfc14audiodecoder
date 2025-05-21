@@ -29,7 +29,7 @@ extern "C" {
     void fc14dec_delete(void* decoder);
 
     /* Apply input format header check to a memory buffer.
-       Returns: 0 = recognized data, 1 = unknown data */
+       Returns: -1 = SMOD, 0 = FC14, 1 = NONE */
     int fc14dec_detect(void* decoder, void* buffer, unsigned long int length);
 
     /* Initialize decoder with input data from a memory buffer.

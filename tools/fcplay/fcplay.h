@@ -263,7 +263,6 @@ namespace player
 		std::string name;
 		std::string author;
 		std::string title;
-		std::string fmt;
 		unsigned long int beg;
 		unsigned long int cur;
 		unsigned long int end;
@@ -271,7 +270,7 @@ namespace player
 		std::vector<uint8_t> buf;
 		void print()
 		{
-			printf("\r%0*zu %0*zu/%0*zu %s ", max_file_size_len, buf.size(), max_song_length_len, cur, max_song_length_len, end, name.c_str());
+			printf("\r%0*zu %0*zu/%0*zu %s %s ", max_file_size_len, buf.size(), max_song_length_len, cur, max_song_length_len, end, buf.data(), name.c_str());
 		}
 		bool song_end()
 		{
@@ -284,13 +283,13 @@ namespace player
 		}
 	};
 	std::vector<time> timelist;
-	inline bool is_playable(const path& src)
+	inline int format(const path& src)
 	{
 		char buf[8] = "";
 		FILE* fp = fopen(src.c_str(), "rb");
 		if(fread(buf, 8, 1, fp) == 1)
 		fclose(fp);
-		return fc14dec_detect(decoder, buf, 8) == 0;
+		return fc14dec_detect(decoder, buf, 8);
 	}
 	bool init()
 	{
@@ -323,7 +322,6 @@ namespace player
 			}
 
 			timelist[i].name = playlist[i].filename().replace_extension("");
-			timelist[i].fmt  = fc14dec_format_name(decoder);
 			/* determine size string dimensions */
 			snprintf(str, 255, "%zu", timelist[i].buf.size());
 			len = strlen(str);
@@ -343,7 +341,7 @@ namespace player
 		}
 		if(first)
 		{
-			printf("%zu %0*u/%0*u name\n",player::memory_usage, max_song_length_len, sys::config::step::beg, max_song_length_len, sys::config::step::end);
+			printf("%zu %0*u/%0*u fmt  name\n",player::memory_usage, max_song_length_len, sys::config::step::beg, max_song_length_len, sys::config::step::end);
 			cout << ("--------------------------------------------------") << endl;
 			first = false;
 		}
@@ -354,7 +352,7 @@ namespace player
 		src = !src.is_absolute() ? proximate(src) : src;
 		if(exists(src))
 		{
-			if(!is_directory(src) && is_playable(src))
+			if(!is_directory(src) && !(format(src) > 0))
 			{
 				playlist.push_back(src);
 				timelist.push_back({ .beg = sys::config::step::beg, .cur = 0, .end = sys::config::step::end, .len = 0 }); 

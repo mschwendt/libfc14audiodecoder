@@ -16,23 +16,9 @@
 #include <getopt.h>
 #include <unistd.h>
 
-#ifdef __PSP__
-#include <pspkernel.h>
-#include <pspdebug.h>
-#include <pspdisplay.h>
-#include <pspctrl.h>
-#include <pspaudio.h>
-#include <pspaudiolib.h>
-#else
 #include <alsa/asoundlib.h>
-#endif
 
 #include "fc14audiodecoder.h"
-
-#ifdef __PSP__
-#define printf  pspDebugScreenPrintf
-PSP_MODULE_INFO ("FCPLAY", 0, 1, 1);
-#endif
 
 using namespace std;
 using namespace std::filesystem;
@@ -88,14 +74,6 @@ namespace config
 
 	void args(int argc, char* argv[])
 	{
-#ifdef __PSP__
-		argc = 3;
-		delete[] (argv);
-		argv = new char*[3];
-		argv[0] = (char*)"fcplay";
-		argv[1] = (char*)"-r";
-		argv[2] = (char*)"host0:/songs/";
-#endif
 		if(argc < 1)
 		{
 			print_usage(argv[0]);
@@ -140,10 +118,6 @@ namespace config
 };
 namespace input
 {
-#ifdef __PSP__
-	using gamepad = SceCtrlData;
-	gamepad pad;
-#endif
 	struct old
 	{
 		void (*sighup)  (int);
@@ -165,64 +139,23 @@ namespace input
 	}
 	bool init()
 	{
-#ifdef __PSP__
-		sceCtrlSetSamplingCycle (0);
-		sceCtrlSetSamplingMode (PSP_CTRL_MODE_ANALOG);
-#endif
 		return ((signal(SIGHUP , &sys::input::handler) == SIG_ERR)
 		     || (signal(SIGINT , &sys::input::handler) == SIG_ERR)
 		     || (signal(SIGQUIT, &sys::input::handler) == SIG_ERR)
 	             || (signal(SIGTERM, &sys::input::handler) == SIG_ERR)) ? false : true;
 	}
-	bool pressed (int buttons)
-	{
-#ifdef __PSP__
-		return pad.Buttons & buttons;
-#else
-		return false;
-#endif
-	}
-	bool update()
-	{
-#ifdef __PSP__
-		sceCtrlReadBufferPositive (&pad, 1);
-		return !pressed(PSP_CTRL_CROSS);
-#else
-		return false;
-#endif
-	}
-};
-namespace video
-{
-	bool init()
-	{
-#ifdef __PSP__
-		pspDebugScreenInit ();
-#endif
-		return true;
-	}
 };
 
 namespace audio
 {
-#ifdef __PSP__
-	using handle = int;
-	sys::audio::handle playback_handle;
-#else
 	using handle = snd_pcm_t;
 	using params = snd_pcm_hw_params_t;
 	sys::audio::params *hw_params;
 	sys::audio::handle *playback_handle;
-#endif
 	std::vector<uint8_t> sample_buf;
 
 	bool init()
 	{
-#ifdef __PSP__
-		playback_handle = sceAudioChReserve(PSP_AUDIO_NEXT_CHANNEL,1024,PSP_AUDIO_FORMAT_STEREO); 
-		sample_buf.resize(sys::config::audio::buffer_size);
-		return playback_handle != 0;
-#else
 		bool ret = !(snd_pcm_open(&playback_handle, "default", SND_PCM_STREAM_PLAYBACK, 0) < 0 ||
 		snd_pcm_hw_params_malloc(&hw_params) < 0 ||
 		snd_pcm_hw_params_any(playback_handle, hw_params) < 0 ||
@@ -236,15 +169,10 @@ namespace audio
 		snd_pcm_hw_params_free(hw_params);
 		sample_buf.resize(sys::config::audio::pcm_freq);
 		return ret;
-#endif
 	}
 	bool halt()
 	{
-#ifdef __PSP__
-		return true;
-#else
 		return snd_pcm_close(playback_handle) < 0;
-#endif
 	}
 };
 
@@ -388,16 +316,14 @@ namespace player
 		while (!sys::done && !timelist[i].song_end())
 		{
 			timelist[i].update(fc14dec_buffer_fill(decoder, sys::audio::sample_buf.data(), sys::config::audio::buffer_size >> 2));
+			/* display song progress info */
 			timelist[i].print();
-#ifdef __PSP__
-    			sceAudioOutputPannedBlocking(sys::audio::playback_handle, PSP_AUDIO_VOLUME_MAX, PSP_AUDIO_VOLUME_MAX, sys::audio::sample_buf.data());
-#else
+			/* write to audio interface device */
 			if((err = snd_pcm_writei(sys::audio::playback_handle, sys::audio::sample_buf.data(), sys::config::audio::buffer_size >> 4)) != sys::config::audio::buffer_size >> 4)
 			{
 				fprintf(stderr, "write to audio interface failed (%s)\n", snd_strerror(err));
 				exit(1);
 			}
-#endif
 		}
 		fc14dec_restart(decoder);
 		cout << endl;

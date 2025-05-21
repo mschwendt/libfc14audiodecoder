@@ -5,7 +5,7 @@ int main(int argc, char *argv[])
 	sys::config::args(argc, argv);
 
 	cout << ("--------------------------------------------------") << endl;
-	cout << ("Future Composer 1.0 - 1.4 (AMIGA) Music Player"    ) << endl;
+	cout << ("AMIGA Future Composer v1.x SMOD/FC14 music player" ) << endl;
 	cout << ("--------------------------------------------------") << endl;
 
 	for(int i = optind; i < argc; i++)

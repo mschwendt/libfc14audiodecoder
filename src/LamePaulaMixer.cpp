@@ -153,7 +153,6 @@ void LamePaulaMixer::setBpm(uword bpm) {
     samplesAdd = 0; 
 }
 
-#include <cstdio>
 unsigned long int LamePaulaMixer::fillBuffer(void* buffer, udword bufferLen, PaulaPlayer *player) {
     // Both, 16-bit and stereo samples take more memory.
     // Hence fewer samples fit into the buffer.

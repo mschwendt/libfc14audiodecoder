@@ -6,16 +6,16 @@
 #ifndef PAULA_H
 #define PAULA_H
 
-#include "MyTypes.h"
+#include "common.h"
 
 class PaulaVoice {
  public:
     // Paula
     struct _paula {
-        const ubyte* start;  // start address
-        uword length;        // length in 16-bit words
-        uword period;
-        uword volume;        // 0-64
+        const uint8_t* start;  // start address
+        uint16_t length;        // length in 16-bit words
+        uint16_t period;
+        uint16_t volume;        // 0-64
     } paula;
 
     virtual ~PaulaVoice() { };
@@ -27,8 +27,8 @@ class PaulaVoice {
 class PaulaMixer {
  public:
     virtual ~PaulaMixer() { };
-    virtual void init(ubyte voices) = 0;
-    virtual PaulaVoice* getVoice(ubyte) = 0;
+    virtual void init(uint8_t voices) = 0;
+    virtual PaulaVoice* getVoice(uint8_t) = 0;
 };
 
 class PaulaPlayer {

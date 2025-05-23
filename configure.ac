@@ -85,5 +85,5 @@ fi
 
 LT_INIT([disable-static])
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile tools/fcplay/Makefile])
 AC_OUTPUT

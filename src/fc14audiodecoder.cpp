@@ -41,12 +41,17 @@ void fc14dec_delete(void* ptr) {
 
 int fc14dec_detect(void* ptr, void* data, unsigned long int length) {
     FC14_DECLARE_DECODER;
-    return p->decoder.isOurData(data,length);
+    if(p->decoder.isOurData(data,length))
+    {
+        if(p->decoder.isSMOD) return -1;
+        if(p->decoder.isFC14) return  0;
+    }
+    return 1;
 }
 
 int fc14dec_init(void* ptr, void* data, unsigned long int length) {
     FC14_DECLARE_DECODER;
-    return p->decoder.init(data,length);
+    return p->decoder.init(data,length) ? 0 : 1;
 }
 
 void fc14dec_restart(void* ptr) {
@@ -60,7 +65,7 @@ void fc14dec_seek(void* ptr, long int ms) {
     while (ms>=0) {
         p->decoder.run();
         ms -= 20;
-        if ( fc14dec_song_end(p) ) {
+        if (fc14dec_song_end(p) == 0) {
             break;
         }
     };
@@ -71,14 +76,14 @@ void fc14dec_mixer_init(void* ptr, int freq, int bits, int channels, int zero) {
     p->mixer.init(freq,bits,channels,zero);
 }
 
-void fc14dec_buffer_fill(void* ptr, void* buffer, unsigned long int length) {
+unsigned long int fc14dec_buffer_fill(void* ptr, void* buffer, unsigned long int length) {
     FC14_DECLARE_DECODER;
-    p->mixer.fillBuffer(buffer,length,&p->decoder);
+    return p->mixer.fillBuffer(buffer,length,&p->decoder);
 }
 
 int fc14dec_song_end(void* ptr) {
     FC14_DECLARE_DECODER;
-    return p->decoder.songEnd;
+    return p->decoder.songEnd ? 0 : 1;
 }
 
 unsigned long int fc14dec_duration(void* ptr) {
@@ -88,7 +93,7 @@ unsigned long int fc14dec_duration(void* ptr) {
     do {
         p->decoder.run();
         ms += 20;
-    } while ( !fc14dec_song_end(p) );
+    } while (fc14dec_song_end(p) != 0);
     p->decoder.restart();
     return ms;
 }

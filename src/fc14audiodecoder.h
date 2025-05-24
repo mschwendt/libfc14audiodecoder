@@ -29,12 +29,12 @@ extern "C" {
     void fc14dec_delete(void* decoder);
 
     /* Apply input format header check to a memory buffer.
-       Returns: 0 = recognized data, 1 = unknown data */
+       Returns: boolean integer 1 = recognized data, 0 = unknown data */
     int fc14dec_detect(void* decoder, void* buffer, unsigned long int length);
 
     /* Initialize decoder with input data from a memory buffer.
        Input buffer may be freed as buffer contents are copied.
-       Returns: 0 = success, 1 = failure */
+       Returns: boolean integer 1 = success, 0 = failure */
     int fc14dec_init(void* decoder, void* buffer, unsigned long int length);
 
     /* Restart an already initialized decoder. */
@@ -49,7 +49,7 @@ extern "C" {
     void fc14dec_mixer_init(void* decoder, int frequency, int precision,
                             int channels, int zero);
 
-    /* Return 0 if song end has been reached, else 1. */
+    /* Return 1 (true) if song end has been reached, else 0 (false). */
     int fc14dec_song_end(void* decoder);
 
     /* Return song duration in milli-seconds [ms].
@@ -59,8 +59,7 @@ extern "C" {
     /* Set an initialized decoder's play position in milli-seconds [ms]. */
     void fc14dec_seek(void* decoder, long int ms);
 
-    /* Return C-string describing the detected input data format.
-       Use only with an initialized decoder. */
+    /* Return C-string describing the detected input data format. */
     const char* fc14dec_format_name(void* decoder);
 
     /* Fill output sample buffer with audio. */

@@ -1171,3 +1171,29 @@ void FC::processPerVol(CHdata& CHXdata)
     }
     CHXdata.period = tmp0;
 }
+
+#ifdef FC_API_EXT_1
+int FC::getUsedPatterns() {
+	return _admin.usedPatterns;
+}
+
+int FC::getUsedSndModSeqs() {
+	return _admin.usedSndModSeqs;
+}
+
+int FC::getUsedVolModSeqs() {
+	return _admin.usedVolModSeqs;
+}
+
+unsigned short FC::getSampleLength(unsigned int num) {
+	return _sounds[num].len*2;
+}
+
+unsigned short FC::getSampleRepOffset(unsigned int num) {
+	return _sounds[num].repOffs;
+}
+
+unsigned short FC::getSampleRepLength(unsigned int num) {
+	return _sounds[num].repLen*2;
+}
+#endif

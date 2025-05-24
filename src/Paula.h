@@ -29,6 +29,10 @@ class PaulaMixer {
     virtual ~PaulaMixer() { };
     virtual void init(ubyte voices) = 0;
     virtual PaulaVoice* getVoice(ubyte) = 0;
+#ifdef FC_API_EXT_1
+    virtual void mute(ubyte voice, bool) = 0;
+    virtual bool isMuted(ubyte voice) = 0;
+#endif
 };
 
 class PaulaPlayer {

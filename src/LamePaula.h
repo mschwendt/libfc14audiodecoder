@@ -51,6 +51,11 @@ class LamePaulaMixer : public PaulaMixer
     void init(ubyte voices);
     PaulaVoice* getVoice(ubyte); 
 
+#ifdef FC_API_EXT_1
+    void mute(ubyte channel, bool);
+    bool isMuted(ubyte channel);
+#endif
+
     void fillBuffer(void* buffer, udword bufferLen, PaulaPlayer *player);
 
  private:
@@ -68,6 +73,9 @@ class LamePaulaMixer : public PaulaMixer
     static const int _maxVoices = 32;
     LamePaulaVoice* _voice[_maxVoices];
     int _voices;
+#ifdef FC_API_EXT_1
+    bool _muted[_maxVoices];
+#endif
 
     udword _pcmFreq;
     ubyte _bitsPerSample;

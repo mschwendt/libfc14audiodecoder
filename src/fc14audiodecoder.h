@@ -66,6 +66,17 @@ extern "C" {
     /* Fill output sample buffer with audio. */
     void fc14dec_buffer_fill(void* decoder, void* buffer, unsigned long int length);
 
+#ifdef FC_API_EXT_1
+    void fc14dec_mute_channel(void* ptr, bool mute, unsigned int channel);
+    unsigned short int fc14dec_get_channel_volume(void* ptr, unsigned int channel);
+    int fc14dec_get_used_patterns(void* decoder);
+    int fc14dec_get_used_snd_mod_seqs(void* decoder);
+    int fc14dec_get_used_vol_mod_seqs(void* decoder);
+    int fc14dec_get_sample_length(void* decoder, unsigned int num);
+    int fc14dec_get_sample_rep_offset(void* decoder, unsigned int num);
+    int fc14dec_get_sample_rep_length(void* decoder, unsigned int num);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

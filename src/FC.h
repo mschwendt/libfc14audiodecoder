@@ -37,6 +37,15 @@ class FC : public PaulaPlayer {
     void off();
     bool songEnd; // whether song end has been reached
 
+#ifdef FC_API_EXT_1
+    int getUsedPatterns();
+    int getUsedSndModSeqs();
+    int getUsedVolModSeqs();
+    unsigned short getSampleLength(unsigned int num);
+    unsigned short getSampleRepOffset(unsigned int num);
+    unsigned short getSampleRepLength(unsigned int num);
+#endif
+
     bool isSMOD;  // whether file is in Future Composer 1.0 - 1.3 format
     bool isFC14;  // whether file is in Future Composer 1.4 format
 

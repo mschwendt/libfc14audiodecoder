@@ -35,6 +35,9 @@ FC::FC() {
     input = 0;
     inputLen = 0;
     _admin.initialized = false;
+    isFC14 = false;
+    isSMOD = false;
+    formatName = UNKNOWN_FORMAT_NAME;
 
     // Set up some dummy voices to decouple the decoder from the mixer.
     for (int v=0; v<channels; v++) {
@@ -91,19 +94,20 @@ bool FC::isOurData(void *data, unsigned long int length) {
     // modules are likely to be incompatible in other parts due to incorrect
     // conversion, e.g. effect parameters. It is like creating non-standard
     // module files whose only purpose is to confuse accurate music players.
+    if (isSMOD)
+        formatName = SMOD_FORMAT_NAME;
+    else if (isFC14)
+        formatName = FC14_FORMAT_NAME;
+    else
+        formatName = UNKNOWN_FORMAT_NAME;
     return (isSMOD || isFC14);
 }
 
 
 bool FC::init(void *data, udword length, int startStep, int endStep) {
     if ( !isOurData(data,length) ) {
-        formatName = UNKNOWN_FORMAT_NAME;
         return false;
     }
-    if (isSMOD)
-        formatName = SMOD_FORMAT_NAME;
-    else if (isFC14)
-        formatName = FC14_FORMAT_NAME;
     
     udword copyLen = length+sizeof(silenceData);
     if (copyLen > inputLen) {

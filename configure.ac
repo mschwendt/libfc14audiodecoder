@@ -1,4 +1,4 @@
-AC_INIT([libfc14audiodecoder], [1.0.4])
+AC_INIT([libfc14audiodecoder], [1.0.5])
 AC_CONFIG_SRCDIR([src/FC.cpp])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([src/Config.h])
@@ -22,22 +22,29 @@ case $host in
 	;;
 esac
 
+AC_PROG_CXX
+AC_PROG_AR
+AC_PROG_AWK
 AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_PATH_PROG(RM,rm,rm)
+
 AC_LANG([C])
 
 AC_C_BIGENDIAN
+AC_C_INLINE
+AC_CHECK_HEADER_STDBOOL
+AC_TYPE_INT8_T
+AC_TYPE_UINT8_T
+AC_TYPE_INT16_T
+AC_TYPE_UINT16_T
+AC_TYPE_INT32_T
+AC_TYPE_UINT32_T
 
-AC_CHECK_SIZEOF(char)
-AC_CHECK_SIZEOF(short int)
-AC_CHECK_SIZEOF(int)
-AC_CHECK_SIZEOF(long int)
-if test $ac_cv_sizeof_long_int -lt 4; then
-  AC_MSG_ERROR([platform unsupported: sizeof(long int) < 4]);
-fi
-
-AC_PATH_PROG(RM,rm,rm)
-
-AC_PROG_CXX
 AC_LANG([C++])
 
 AC_DEFUN([FC_CHECK_NOTHROW],
@@ -58,13 +65,6 @@ AC_DEFUN([FC_CHECK_NOTHROW],
     fi
 ])
 FC_CHECK_NOTHROW
-
-AC_CHECK_HEADERS(string iostream)
-if test "$ac_cv_header_string" = no || test "$ac_cv_header_iostream" = no; then
-    AC_MSG_ERROR(
-[Standard C++ library header files not found!]
-     );
-fi
 
 AC_SUBST(CXXFLAGS)
 

@@ -66,3 +66,7 @@ Future Composer v1.3 (SMOD)
 Future Composer v1.4 (FC14)  (C) 1990 by Supersero of The Superions
 
 Future Composer is based on a music routine by Jochen Hippel.
+
+
+Screen-shots of Future Composer v1.4 main screen, pattern editor, and sound editor:
+![](images/fc.png)![](images/fc_pattedit.png)![](images/fc_sndedit.png)

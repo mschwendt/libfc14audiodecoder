@@ -37,8 +37,9 @@ extern "C" {
        Returns: boolean integer 1 = success, 0 = failure */
     int fc14dec_init(void* decoder, void* buffer, unsigned long int length);
 
-    /* Restart an already initialized decoder. */
-    void fc14dec_restart(void* decoder);
+    /* Restart an already initialized decoder.
+       Returns: boolean integer 1 = success, 0 = not initialized yet */
+    int fc14dec_restart(void* decoder);
 
     /* Initialize decoder's audio sample mixer.
        frequency : output sample frequency

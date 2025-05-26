@@ -356,9 +356,9 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
 }
 
 
-void FC::restart(int startStep, int endStep) {
+bool FC::restart(int startStep, int endStep) {
     if (!_admin.initialized) {
-        return;
+        return false;
     }
     // This one later on gets incremented prior to first comparison
     // (4+1=5 => get speed at first step).
@@ -444,6 +444,7 @@ void FC::restart(int startStep, int endStep) {
     _admin.count = _admin.speed;
     _admin.isEnabled = true;
     songEnd = false;
+    return true;
 }
     
 // --------------------------------------------------------------------------

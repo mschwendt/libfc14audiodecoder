@@ -33,7 +33,7 @@ class FC : public PaulaPlayer {
     bool isOurData(void*,unsigned long int);
     bool init(void*,udword,int=0,int=0);
     void run();
-    void restart(int=0,int=0);
+    bool restart(int=0,int=0);
     void off();
     bool songEnd; // whether song end has been reached
 

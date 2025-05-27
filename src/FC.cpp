@@ -77,10 +77,20 @@ void FC::setMixer(PaulaMixer* mixer) {
 
 
 bool FC::isOurData(void *data, unsigned long int length) {
+    ubyte *d = static_cast<ubyte*>(data);
+    // We only examine the first few bytes.
     if ( length<5 ) {
         return false;
     }
-    ubyte *d = static_cast<ubyte*>(data);
+    if ( length>=6 ) {
+        // Check "track table length" definition. It is stored as a 32-bit value,
+        // but its two uppermost bytes will be 0 always, because no existing
+        // FC module uses as many track table steps as to require more than the
+        // low-order 16-bit value.
+        if ( !(d[4]==0x00 && d[5]==0x00) ) {
+            return false;
+        }
+    }
     // Check for "SMOD" ID (Future Composer 1.0 to 1.3).
     isSMOD = (d[0]==0x53 && d[1]==0x4D && d[2]==0x4F && d[3]==0x44 &&
               d[4]==0x00);

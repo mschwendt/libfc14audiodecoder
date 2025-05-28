@@ -84,7 +84,7 @@ class FC : public PaulaPlayer {
     static const int channels = 4;
 
     static const int recurseLimit = 64;  // way more than needed
-    int readModRecurse;
+    int readModRecurse;  // TODO: ought to be private
 
  private:
     PaulaVoice _dummyVoices[channels];

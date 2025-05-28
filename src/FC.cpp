@@ -156,6 +156,15 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
     // This is just for added safety and convenience. One could range-check
     // each pointer/offset where appropriate to avoid segmentation faults
     // caused by damaged input data.
+    //
+    // Smart pointer usage avoids the problem of out-of-bounds access.
+    //
+    // On the topic of rejecting damaged/corrupted input data, over many
+    // years of browsing MOD collections containing Future Composer modules,
+    // no badly corrupted modules have been found. So, if not implementing
+    // pedantic validation of all input data (such as via a dry-run through
+    // the player and watching out for problematic data), only checking
+    // that some offsets are within the module boundaries is not worthwhile.
     
     if (isSMOD) {
         _admin.offsets.trackTable = SMOD_SONGTAB_OFFSET;

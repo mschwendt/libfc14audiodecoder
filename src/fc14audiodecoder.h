@@ -28,7 +28,8 @@ extern "C" {
     /* Delete decoder object. */
     void fc14dec_delete(void* decoder);
 
-    /* Apply input format header check to a memory buffer.
+    /* Apply input format header check to a memory buffer containing
+       at least 5 (optionally 6 or more) bytes. 
        Returns: boolean integer 1 = recognized data, 0 = unknown data */
     int fc14dec_detect(void* decoder, void* buffer, unsigned long int length);
 

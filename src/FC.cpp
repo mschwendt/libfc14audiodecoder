@@ -651,10 +651,9 @@ void FC::nextNote(CHdata& CHXdata)
         // Later enable channel.
         _admin.dmaFlags |= CHXdata.dmaMask;
 
-        // Pattern offset stills points to info byte #1.
         // Get instrument/volModSeq number from info byte #1
         // and add sound transpose value from track table.
-        uword sound = (fcBuf[pattOffs]&0x3f)+CHXdata.soundTranspose;
+        uword sound = (info1&0x3f)+CHXdata.soundTranspose;
         //
         // (FC14 BUG-FIX) Better mask here to take care of overflow.
         //

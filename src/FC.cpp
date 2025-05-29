@@ -674,6 +674,12 @@ void FC::nextNote(CHdata& CHXdata)
             seqOffs = _admin.offsets.volModSeqs+(sound<<6);
         }
         CHXdata.envelopeSpeed = CHXdata.envelopeCount = fcBuf[seqOffs++];
+        // (NOTE) Future Composer GUI did not validate modulation sequence
+        // definitions, and the result of an illegal envelope speed of 0
+        // would be implementation dependent and would affect external players.
+        if ( CHXdata.envelopeSpeed == 0 ) {
+            CHXdata.envelopeSpeed = CHXdata.envelopeCount = 1;
+        }
         // Get sound modulation sequence number.
         sound = fcBuf[seqOffs++];
         CHXdata.vibSpeed = fcBuf[seqOffs++];

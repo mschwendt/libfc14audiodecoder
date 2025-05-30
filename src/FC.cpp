@@ -676,9 +676,8 @@ void FC::nextNote(CHdata& CHXdata)
         // (NOTE) Future Composer GUI did not validate modulation sequence
         // definitions, and the result of an illegal envelope speed of 0
         // would be implementation dependent and would affect external players.
-        if ( CHXdata.envelopeSpeed == 0 ) {
-            CHXdata.envelopeSpeed = CHXdata.envelopeCount = 1;
-        }
+        // Handle validation in processPerVol();
+
         // Get sound modulation sequence number.
         sound = fcBuf[seqOffs++];
         CHXdata.vibSpeed = fcBuf[seqOffs++];
@@ -959,6 +958,7 @@ void FC::volSlide(CHdata& CHXdata)
 void FC::processPerVol(CHdata& CHXdata)
 {
     bool repeatVolSeq;  // JUMP/GOTO - WHILE conversion
+    int jumpCount = 0;
     do
     {
         repeatVolSeq = false;
@@ -976,7 +976,9 @@ void FC::processPerVol(CHdata& CHXdata)
         }
 
         // Time to set next volume level? NE => no, EQ => yes.
-        else if (--CHXdata.envelopeCount == 0)
+        // speed==0 is illegal and as a safety measure must not advance the
+        // sequence position.
+        else if ( (CHXdata.envelopeSpeed == 0) || (--CHXdata.envelopeCount == 0) )
         {
             CHXdata.envelopeCount = CHXdata.envelopeSpeed;
 
@@ -984,8 +986,18 @@ void FC::processPerVol(CHdata& CHXdata)
             do
             {
                 readNextVal = false;
+                if ( ++jumpCount > recurseLimit ) {
+                    break;
+                }
                     
                 udword seqOffs = CHXdata.volSeq+CHXdata.volSeqPos;
+                udword maxSeqOffs = _admin.offsets.volModSeqs+_admin.usedVolModSeqs*64;
+                // Ensure that the volume modulation sequence is within boundaries.
+                // Else loop to beginning automatically as a safety measure.
+                if ( CHXdata.volSeq < maxSeqOffs && seqOffs >= maxSeqOffs ) {
+                    CHXdata.volSeqPos = 0;
+                    seqOffs = CHXdata.volSeq+CHXdata.volSeqPos;
+                }
                 ubyte command = fcBuf[seqOffs];
 
                 switch (command)
@@ -993,6 +1005,10 @@ void FC::processPerVol(CHdata& CHXdata)
                  case ENVELOPE_SUSTAIN:
                     {
                         CHXdata.volSustainTime = fcBuf[seqOffs+1];
+                        // Zero would be illegal.
+                        if ( CHXdata.volSustainTime == 0 ) {
+                            CHXdata.volSustainTime = 1;
+                        }
                         CHXdata.volSeqPos += 2;
                         // This shall loop to beginning of proc.
                         repeatVolSeq = true;
@@ -1008,8 +1024,14 @@ void FC::processPerVol(CHdata& CHXdata)
                     }
                  case ENVELOPE_LOOP:
                     {
-                        // Range check should be done here.
-                        CHXdata.volSeqPos = (fcBuf[seqOffs+1]-5)&0x3f;
+                        // Valid position would be 5 to 0x3f.
+                        CHXdata.volSeqPos = fcBuf[seqOffs+1]&0x3f;
+                        // Skip the sequence header.
+                        if ( CHXdata.volSeqPos >= 5 ) {
+                            CHXdata.volSeqPos -= 5;
+                        } else {  // Less than 5 would be an illegal loop pos.
+                            CHXdata.volSeqPos = 0;
+                        }
                         // (FC14 BUG) Some FC players here do not read a
                         // parameter at the new sequence position. They
                         // leave the pos value in d0, which then passes
@@ -1025,10 +1047,10 @@ void FC::processPerVol(CHdata& CHXdata)
                     }
                  default:
                     {
-                        // Read volume value and advance.
+                        // Read volume value.
                         CHXdata.volume = fcBuf[seqOffs];
-                        if (++CHXdata.volSeqPos > 0x3f) {
-                            CHXdata.volSeqPos = 0x3f;
+                        if ( CHXdata.envelopeSpeed != 0 ) {
+                            ++CHXdata.volSeqPos;
                         }
                         // Full range check for volume 0-64.
                         if (CHXdata.volume > 64) {

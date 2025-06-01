@@ -23,6 +23,7 @@ Paula.cpp \
 LamePaula.h \
 LamePaulaVoice.cpp \
 LamePaulaMixer.cpp \
+LiveFix.h \
 MyEndian.h \
 MyTypes.h \
 SmartPtr.h

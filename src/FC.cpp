@@ -371,6 +371,8 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
     // (NOTE) The lowest octave in the period table is unreachable
     // due to a hardcoded range-check (see bottom).
     
+#include "LiveFix.h"
+
     return true;
 }
 

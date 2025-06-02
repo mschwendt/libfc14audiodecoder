@@ -1,4 +1,4 @@
-C language wrapper library for Future Composer audio decoding
+C language wrapper library for Future Composer audio decoding  
 https://github.com/mschwendt/libfc14audiodecoder
 
 This library provides a C API for an old audio decoder that has been used

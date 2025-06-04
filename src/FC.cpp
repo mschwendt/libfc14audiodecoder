@@ -1225,6 +1225,22 @@ void FC::processPerVol(CHdata& CHXdata)
     CHXdata.period = tmp0;
 }
 
+bool FC::havePattern(int n, const ubyte (&pattWanted)[PATTERN_LENGTH]) {
+    if ( _admin.usedPatterns < n ) {
+        return false;
+    }
+    udword pattStart = _admin.offsets.patterns+(n*PATTERN_LENGTH);
+    if ( (pattStart+n) < inputLen ) {
+        return ( memcmp(input+pattStart,pattWanted,PATTERN_LENGTH) == 0 );
+    }
+    return false;
+}
+
+void FC::replacePattern(int n, const ubyte (&pattNew)[PATTERN_LENGTH]) {
+    udword pattStart = _admin.offsets.patterns+(n*PATTERN_LENGTH);
+    memcpy(input+pattStart,pattNew,PATTERN_LENGTH);
+}
+
 #ifdef FC_API_EXT_1
 int FC::getUsedPatterns() {
 	return _admin.usedPatterns;

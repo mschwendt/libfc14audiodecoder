@@ -196,6 +196,9 @@ class FC : public PaulaPlayer {
     inline void setWave(CHdata&, ubyte num);
     inline void readSeqTranspose(CHdata&);
     void volSlide(CHdata&);
+
+    bool havePattern(int n, const ubyte (&pattWanted)[PATTERN_LENGTH]);
+    void replacePattern(int n, const ubyte (&pattNew)[PATTERN_LENGTH]);
 };
 
 #endif  // FC_H

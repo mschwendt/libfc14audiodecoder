@@ -1,4 +1,4 @@
-AC_INIT([libfc14audiodecoder], [1.0.5])
+AC_INIT([libfc14audiodecoder], [1.0.6])
 AC_CONFIG_SRCDIR([src/FC.cpp])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([src/Config.h])
@@ -34,7 +34,6 @@ AC_PATH_PROG(RM,rm,rm)
 
 AC_LANG([C])
 
-AC_C_BIGENDIAN
 AC_C_INLINE
 AC_CHECK_HEADER_STDBOOL
 AC_TYPE_INT8_T
@@ -66,21 +65,6 @@ AC_DEFUN([FC_CHECK_NOTHROW],
 FC_CHECK_NOTHROW
 
 AC_SUBST(CXXFLAGS)
-
-AH_TEMPLATE([OPTIMIZE_ENDIAN_ACCESS],
-[Define this to make little/big endian machines access little/big endian
-values in memory structures or arrays directly, disregarding alignment])
-AC_ARG_ENABLE(optendian,[  --enable-optendian      whether to optimize little-/big-endian conversion])
-dnl Also support--disable-optendian and --enable-optendian=no 
-if test "$enable_optendian" = yes; then
-    AC_DEFINE([OPTIMIZE_ENDIAN_ACCESS])
-    AC_MSG_WARN([OPTIMIZE_ENDIAN_ACCESS enabled])
-elif test "$enable_optendian" = no; then
-	 AC_MSG_WARN([OPTIMIZE_ENDIAN_ACCESS disabled])
-elif test "x$cpu" == "xx86"; then
-    AC_DEFINE([OPTIMIZE_ENDIAN_ACCESS])
-    AC_MSG_NOTICE([OPTIMIZE_ENDIAN_ACCESS enabled automatically for $host])
-fi
 
 LT_INIT([disable-static])
 

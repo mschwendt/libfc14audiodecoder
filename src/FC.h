@@ -61,6 +61,8 @@ class FC : public PaulaPlayer {
     static const uword FC14_SONGTAB_OFFSET = 0x00b4;      // 180
 
     static const uword TRACKTAB_ENTRY_LENGTH = 0x000d;    // 3*4+1
+    // although this is a constant in FC, it isn't used everywhere
+    // as there are also <<6 shifts in some places of the code
     static const uword PATTERN_LENGTH = 0x0040;           // 32*2
     static const ubyte PATTERN_BREAK = 0x49;
 

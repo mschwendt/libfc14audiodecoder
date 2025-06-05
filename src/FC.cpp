@@ -464,14 +464,18 @@ bool FC::restart(int startStep, int endStep) {
     // This is the wrong speed if a sub-song is selected by skipping steps.
     // 
     // (NOTE) If it is skipped to a step where no replay step is specified,
-    // the default speed is taken. This can be wrong. The only solution
-    // would be to fast-forward the song, i.e. read the speed from all
-    // steps up to the starting step.
+    // go backwards in track table and search for a speed definition.
     //
-    _admin.speed = fcBuf[_CHdata[0].trackStart+_CHdata[0].trackPos+12];
-    if (_admin.speed == 0) {
-        _admin.speed = 3;  // documented default
-    }
+    _admin.speed = 3;  // documented default
+    udword t = _CHdata[0].trackStart+_CHdata[0].trackPos;
+    while (t >= _admin.offsets.trackTable) {
+        ubyte s = fcBuf[t+12];
+        if (s > 0) {
+            _admin.speed = s;
+            break;
+        }
+        t -= TRACKTAB_ENTRY_LENGTH;
+     }
     _admin.count = _admin.speed;
     _admin.isEnabled = true;
     songEnd = false;

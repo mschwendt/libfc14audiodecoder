@@ -389,7 +389,7 @@ bool FC::restart(int startStep, int endStep) {
     // At +4 is length of track table.
     udword trackTabLen = readEndian(fcBuf[4],fcBuf[5],fcBuf[6],fcBuf[7]);
 #if defined(DEBUG)
-    cout << "trackTabLen = " << hex << setw(8) << setfill('0') << trackTabLen << endl;
+    cout << "trackTabLen = 0x" << hex << setw(8) << setfill('0') << trackTabLen << endl;
 #endif
 
     off();
@@ -428,9 +428,19 @@ bool FC::restart(int startStep, int endStep) {
         killChannel(_CHdata[c]);
 
         // Track table start and end.
+        // If with custom start/end steps, adjust boundaries.
         _CHdata[c].trackStart = _admin.offsets.trackTable+c*3;
-        _CHdata[c].trackEnd = _CHdata[c].trackStart+trackTabLen;
-        _CHdata[c].trackPos = TRACKTAB_ENTRY_LENGTH*startStep;
+        if ( (startStep>=0) && ((startStep*TRACKTAB_ENTRY_LENGTH)<trackTabLen) ) {
+            _CHdata[c].trackStart += startStep*TRACKTAB_ENTRY_LENGTH;
+        }
+        // a (sub)song's track table end is after the last step to play
+        if ( (endStep>0) && (((endStep)*TRACKTAB_ENTRY_LENGTH)<=trackTabLen) ) {
+            _CHdata[c].trackEnd = _CHdata[c].trackStart+(endStep)*TRACKTAB_ENTRY_LENGTH;
+        }
+        // also the default for endStep=0
+        else {
+            _CHdata[c].trackEnd = _CHdata[c].trackStart+trackTabLen;
+        }
 
         // 4*
         // PT = PATTERN

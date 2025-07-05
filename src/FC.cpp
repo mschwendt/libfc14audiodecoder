@@ -388,6 +388,10 @@ bool FC::restart(int startStep, int endStep) {
 
     // At +4 is length of track table.
     udword trackTabLen = readEndian(fcBuf[4],fcBuf[5],fcBuf[6],fcBuf[7]);
+    // Invalid track table length in "cult.smod".
+    if (trackTabLen == 0) {
+        trackTabLen = _admin.offsets.patterns-_admin.offsets.trackTable;
+    }
 #if defined(DEBUG)
     cout << "trackTabLen = 0x" << hex << setw(8) << setfill('0') << trackTabLen << endl;
 #endif

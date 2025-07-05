@@ -1014,7 +1014,8 @@ void FC::processPerVol(CHdata& CHXdata)
                     
                 udword seqOffs = CHXdata.volSeq+CHXdata.volSeqPos;
                 udword maxSeqOffs = _admin.offsets.volModSeqs+_admin.usedVolModSeqs*64;
-                // Ensure that the volume modulation sequence is within boundaries.
+                // Ensure that the volume modulation sequence is within boundaries,
+                // because envelope position is not limited to sequence size.
                 // Else loop to beginning automatically as a safety measure.
                 if ( CHXdata.volSeq < maxSeqOffs && seqOffs >= maxSeqOffs ) {
                     CHXdata.volSeqPos = 0;
@@ -1071,6 +1072,9 @@ void FC::processPerVol(CHdata& CHXdata)
                     {
                         // Read volume value.
                         CHXdata.volume = fcBuf[seqOffs];
+                        // Envelope speed 0 is undefined and must NOT advance
+                        // envelope pos, or else it might proceed into next
+                        // volmod sequence (and change volume by mistake).
                         if ( CHXdata.envelopeSpeed != 0 ) {
                             ++CHXdata.volSeqPos;
                         }

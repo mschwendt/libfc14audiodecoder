@@ -390,6 +390,8 @@ bool FC::restart(int startStep, int endStep) {
     udword trackTabLen = readEndian(fcBuf[4],fcBuf[5],fcBuf[6],fcBuf[7]);
     // Invalid track table length in "cult.smod".
     if (trackTabLen == 0) {
+        // Yeah, potentially this is +1 too much, but that is okay
+        // for the track table end ptr comparison we do.
         trackTabLen = _admin.offsets.patterns-_admin.offsets.trackTable;
     }
 #if defined(DEBUG)

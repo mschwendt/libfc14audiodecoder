@@ -119,20 +119,20 @@ bool FC::init(void *data, udword length, int startStep, int endStep) {
         return false;
     }
     
-    udword copyLen = length+sizeof(silenceData);
-    if (copyLen > inputLen) {
+    udword newLen = length+sizeof(silenceData);
+    if (newLen > inputLen) {
         delete[] input;
         inputLen = 0;
 #ifdef FC_HAVE_NOTHROW
-        if ( (input = new(std::nothrow) ubyte[copyLen]) == 0 ) {
+        if ( (input = new(std::nothrow) ubyte[newLen]) == 0 ) {
 #else
-        if ( (input = new ubyte[copyLen]) == 0 ) {
+        if ( (input = new ubyte[newLen]) == 0 ) {
 #endif
             return false;
         }
     }
-    memcpy(input,data,copyLen);
-    inputLen = copyLen;
+    memcpy(input,data,length);
+    inputLen = newLen;
 
     // Set up smart pointers for signed and unsigned input buffer access.
     // Ought to be read-only (const), but this implementation appends

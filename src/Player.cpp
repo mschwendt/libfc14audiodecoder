@@ -559,9 +559,9 @@ void FC::replacePattern(int n, const ubyte (&pattNew)[PATTERN_LENGTH]) {
     memcpy(input+pattStart,pattNew,PATTERN_LENGTH);
 }
 
-bool FC::copyStats(fc14dec_mod_stats& targetStats) {
+bool FC::copyStats(struct fc14dec_mod_stats* targetStats) {
     if (admin.initialized) {
-        targetStats = stats;
+        *targetStats = stats;
         return true;
     }
     return false;

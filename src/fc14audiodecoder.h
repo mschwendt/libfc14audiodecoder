@@ -100,7 +100,7 @@ extern "C" {
 
     /* Only to be called after initialization.
        Returns: boolean integer 1 = success, 0 = not initialized yet */
-    int fc14dec_get_stats(void* decoder, fc14dec_mod_stats& stats);
+    int fc14dec_get_stats(void* decoder, struct fc14dec_mod_stats* stats);
 
     void fc14dec_mute_channel(void* decoder, bool mute, unsigned int channel);
     

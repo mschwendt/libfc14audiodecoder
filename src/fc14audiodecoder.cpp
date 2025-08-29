@@ -111,7 +111,7 @@ void fc14dec_set_loop_mode(void* ptr, int flag) {
     p->decoder.setLoopMode(flag);
 }
 
-int fc14dec_get_stats(void* ptr, fc14dec_mod_stats& stats) {
+int fc14dec_get_stats(void* ptr, struct fc14dec_mod_stats* stats) {
     FC14_DECLARE_DECODER;
     return p->decoder.copyStats(stats);
 }

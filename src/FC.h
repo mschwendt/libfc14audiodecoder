@@ -52,7 +52,7 @@ class FC : public PaulaPlayer {
     const char* getFormatID();
     const char* getFormatName();
 
-    bool copyStats(fc14dec_mod_stats& targetStats);
+    bool copyStats(struct fc14dec_mod_stats* targetStats);
     
     //#ifdef FC_API_EXT_1
     uword getSampleLength(unsigned int num);

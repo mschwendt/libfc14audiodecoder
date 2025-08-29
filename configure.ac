@@ -1,4 +1,4 @@
-AC_INIT([libfc14audiodecoder], [1.0.6])
+AC_INIT([libfc14audiodecoder], [2.0.0])
 AC_CONFIG_SRCDIR([src/FC.cpp])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([src/Config.h])
@@ -68,5 +68,5 @@ AC_SUBST(CXXFLAGS)
 
 LT_INIT([disable-static])
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile libfc14audiodecoder.pc src/Makefile])
 AC_OUTPUT

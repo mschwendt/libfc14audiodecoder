@@ -8,3 +8,6 @@ SUBDIRS = src
 
 dist-hook:
 		@RM@ -f $(distdir)/src/Config.h
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libfc14audiodecoder.pc

@@ -1,0 +1,14 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+datarootdir=@datarootdir@
+data_dir=@datadir@
+
+version=@PACKAGE_VERSION@
+include_dir=@includedir@
+lib_dir=@libdir@
+
+Name: libfc14audiodecoder
+Description: C wrapper library for Future Composer & Hippel music decoding
+Version: @PACKAGE_VERSION@
+Libs: -L${lib_dir} -lfc14audiodecoder
+Cflags: -I${include_dir}

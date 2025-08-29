@@ -1,27 +1,44 @@
 // This is only an excerpt of a header originally from libsidplay.
 // Since libfc14audiodecoder uses a smart pointer implementation,
-// and all FC modules used big-endian byte order, only the readEndian
-// functions are needed.
+// and all FC/TFMX modules used big-endian byte order, only the
+// big-endian functions are needed.
 
 #ifndef MYENDIAN_H
 #define MYENDIAN_H
 
 #include "Config.h"
 #include "MyTypes.h"
+#include "SmartPtr.h"
 
-// Convert high-byte and low-byte to 16-bit word.
-// Used to read 16-bit words in little-endian order.
-inline uword readEndian(ubyte hi, ubyte lo)
-{
-  return(( (uword)hi << 8 ) + (uword)lo );
+inline udword readBEudword(smartPtr<ubyte> ptr, udword offset) {
+	return ( (((udword)ptr[offset])<<24) + (((udword)ptr[offset+1])<<16)
+			+ (((udword)ptr[offset+2])<<8) + ((udword)ptr[offset+3]) );
 }
 
-// Convert high bytes and low bytes of MSW and LSW to 32-bit word.
-// Used to read 32-bit words in little-endian order.
-inline udword readEndian(ubyte hihi, ubyte hilo, ubyte hi, ubyte lo)
-{
-  return(( (udword)hihi << 24 ) + ( (udword)hilo << 16 ) + 
-		 ( (udword)hi << 8 ) + (udword)lo );
+inline udword readBEudword(smartPtr<const ubyte> ptr, udword offset) {
+	return ( (((udword)ptr[offset])<<24) + (((udword)ptr[offset+1])<<16)
+			+ (((udword)ptr[offset+2])<<8) + ((udword)ptr[offset+3]) );
+}
+
+inline uword readBEuword(smartPtr<ubyte> ptr, udword offset) {
+    return ( (((uword)ptr[offset])<<8) + ((uword)ptr[offset+1]) );
+}
+
+inline uword readBEuword(smartPtr<const ubyte> ptr, udword offset) {
+    return ( (((uword)ptr[offset])<<8) + ((uword)ptr[offset+1]) );
+}
+
+
+inline void writeBEdword(smartPtr<ubyte> ptr, udword offset, udword someDword) {
+	ptr[offset+3] = (ubyte)(someDword&0xFF);
+	ptr[offset+2] = (ubyte)((someDword>>8)&0xFF);
+	ptr[offset+1] = (ubyte)((someDword>>16)&0xFF);
+	ptr[offset+0] = (ubyte)((someDword>>24)&0xFF);
+}
+
+inline void writeBEword(smartPtr<ubyte> ptr, udword offset, uword someWord) {
+	ptr[offset+1] = (ubyte)(someWord&0xFF);
+	ptr[offset+0] = (ubyte)(someWord>>8);
 }
 
 #endif  // MYENDIAN_H

@@ -8,15 +8,19 @@
 
 #include "MyTypes.h"
 
+class PaulaMixer;
+
 class PaulaVoice {
  public:
-    // Paula
+    // to simulate basic access to Paula registers
     struct _paula {
         const ubyte* start;  // start address
-        uword length;        // length in 16-bit words
-        uword period;
+        uword length;        // length as number of 16-bit words
+        uword period;        // clock/frequency
         uword volume;        // 0-64
     } paula;
+
+    static const uword VOLUME_MAX = 64;
 
     virtual ~PaulaVoice() { };
     virtual void on();
@@ -27,18 +31,25 @@ class PaulaVoice {
 class PaulaMixer {
  public:
     virtual ~PaulaMixer() { };
-    virtual void init(ubyte voices) = 0;
-    virtual PaulaVoice* getVoice(ubyte) = 0;
-#ifdef FC_API_EXT_1
-    virtual void mute(ubyte voice, bool) = 0;
-    virtual bool isMuted(ubyte voice) = 0;
-#endif
+    virtual void init(ubyte voices);   // number of audio input sources
+    virtual PaulaVoice* getVoice(ubyte);
+
+    virtual ubyte playerRate(ubyte freq);  // set & get, 0 = default
+
+    virtual void mute(ubyte voice, bool);
+    virtual bool isMuted(ubyte voice);
 };
 
 class PaulaPlayer {
  public:
     virtual ~PaulaPlayer() { };
-    virtual void run() = 0;
+    virtual int run() = 0;
+    ubyte getRate() {
+        return rate;
+    }
+    
+protected:
+    ubyte rate;
 };
 
 #endif  // PAULA_H

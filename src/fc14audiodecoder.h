@@ -35,6 +35,11 @@ extern "C" {
        Returns: boolean integer 1 = success, 0 = failure */
     int fc14dec_init(void* decoder, void* buffer, uint32_t length, int songNumber);
 
+    /* With an already initialized decoder, this can be called to init a different song.
+       Song numbers start at 0.
+       Returns: boolean integer 1 = success, 0 = failure */
+    int fc14dec_reinit(void* decoder, int songNumber);
+
     /* Initialize decoder's audio sample mixer.
        frequency : output sample frequency
        precision : bits per sample

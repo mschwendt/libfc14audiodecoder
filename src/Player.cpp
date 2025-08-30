@@ -168,6 +168,12 @@ const char* FC::getFormatName() {
     return formatName.c_str();
 }
 
+bool FC::init(int songNumber) {
+    if (!admin.initialized)
+        return false;
+    return init(input,inputLen,songNumber);
+}
+
 bool FC::init(void *data, udword length, int songNumber) {
     songNumber = (songNumber < 0) ? 0 : songNumber;
     
@@ -177,67 +183,70 @@ bool FC::init(void *data, udword length, int songNumber) {
         return false;
     }
 
-    // If we still have a sufficiently large buffer, reuse it.
-    udword newLen = length+sizeof(silenceData);
-    if (newLen > inputBufLen) {
-        delete[] input;
-        inputBufLen = 0;
+    if (data != input) {
+        // If we still have a sufficiently large buffer, reuse it.
+        udword newLen = length+sizeof(silenceData);
+        if (newLen > inputBufLen) {
+            delete[] input;
+            inputBufLen = 0;
 #ifdef FC_HAVE_NOTHROW
-        if ( (input = new(std::nothrow) ubyte[newLen]) == 0 ) {
+            if ( (input = new(std::nothrow) ubyte[newLen]) == 0 )
 #else
-        if ( (input = new ubyte[newLen]) == 0 ) {
+            if ( (input = new ubyte[newLen]) == 0 )
 #endif
-            return false;
+            {
+                return false;
+            }
         }
+        memcpy(input,data,length);
+        inputBufLen = newLen;
+        inputLen = length;
+        
+        // Set up smart pointers for signed and unsigned input buffer access.
+        // Ought to be read-only (const), but this implementation appends
+        // a few values to the end of the buffer (see further below) and
+        // may repair some data, too.
+        fcBufS.setBuffer((sbyte*)input,inputBufLen);
+        fcBuf.setBuffer((ubyte*)input,inputBufLen);
+        
+        // (NOTE) This next bit is just for convenience.
+        //
+        // Copy ``silent'' modulation sequence to end of FC module buffer so it
+        // is in the address space of the FC module and thus allows using the
+        // same smart pointers as throughout the rest of the code.
+        offsets.silence = inputLen;
+        for (ubyte i=0; i<sizeof(silenceData); i++) {
+            fcBuf[offsets.silence+i] = silenceData[i];
+        }
+        
+        // A short silent sample to use,
+        // if sample definitions don't pass buffer range checks.
+        silentSample.pStart = fcBuf.tellBegin()+offsets.silence+1;
+        silentSample.startOffs = silentSample.repOffs = 0;
+        silentSample.len = silentSample.repLen = 1;
+        
+        for (int s=0; s<SAMPLES_MAX; s++) {
+            samples[s] = silentSample;
+        }
+        
+        // (NOTE) Instead of addresses (pointers) use 32-bit offsets everywhere.
+        // This is just for added safety and convenience. One could range-check
+        // each pointer/offset where appropriate to avoid segmentation faults
+        // caused by damaged input data.
+        //
+        // Smart pointer usage avoids the problem of out-of-bounds access.
+        //
+        // On the topic of rejecting damaged/corrupted input data, over many
+        // years of browsing MOD collections containing Future Composer modules,
+        // no extremely corrupted modules have been found. Those with bad header
+        // data or truncated sample data have been replaced with the help of
+        // a module collection's maintainers. Bad/broken modules may still be
+        // encountered "in the wild" and as copies in private collections.
+        // So, if not implementing pedantic validation of all input data (such
+        // as via a dry-run through the player and watching out for problematic
+        // data), only checking that some offsets are within the module boundaries
+        // is not worthwhile. A broken module may sound broken in unknown ways.
     }
-    memcpy(input,data,length);
-    inputBufLen = newLen;
-    inputLen = length;
-
-    // Set up smart pointers for signed and unsigned input buffer access.
-    // Ought to be read-only (const), but this implementation appends
-    // a few values to the end of the buffer (see further below) and
-    // may repair some data, too.
-    fcBufS.setBuffer((sbyte*)input,inputBufLen);
-    fcBuf.setBuffer((ubyte*)input,inputBufLen);
-    
-    // (NOTE) This next bit is just for convenience.
-    //
-    // Copy ``silent'' modulation sequence to end of FC module buffer so it
-    // is in the address space of the FC module and thus allows using the
-    // same smart pointers as throughout the rest of the code.
-    offsets.silence = inputLen;
-    for (ubyte i=0; i<sizeof(silenceData); i++) {
-        fcBuf[offsets.silence+i] = silenceData[i];
-    }
-
-    // A short silent sample to use,
-    // if sample definitions don't pass buffer range checks.
-    silentSample.pStart = fcBuf.tellBegin()+offsets.silence+1;
-    silentSample.startOffs = silentSample.repOffs = 0;
-    silentSample.len = silentSample.repLen = 1;
-
-    for (int s=0; s<SAMPLES_MAX; s++) {
-        samples[s] = silentSample;
-    }
-
-    // (NOTE) Instead of addresses (pointers) use 32-bit offsets everywhere.
-    // This is just for added safety and convenience. One could range-check
-    // each pointer/offset where appropriate to avoid segmentation faults
-    // caused by damaged input data.
-    //
-    // Smart pointer usage avoids the problem of out-of-bounds access.
-    //
-    // On the topic of rejecting damaged/corrupted input data, over many
-    // years of browsing MOD collections containing Future Composer modules,
-    // no extremely corrupted modules have been found. Those with bad header
-    // data or truncated sample data have been replaced with the help of
-    // a module collection's maintainers. Bad/broken modules may still be
-    // encountered "in the wild" and as copies in private collections.
-    // So, if not implementing pedantic validation of all input data (such
-    // as via a dry-run through the player and watching out for problematic
-    // data), only checking that some offsets are within the module boundaries
-    // is not worthwhile. A broken module may sound broken in unknown ways.
 
     analyze->clear();
     // Main initialization.

@@ -47,6 +47,11 @@ int fc14dec_init(void* ptr, void* data, uint32_t length, int songNumber) {
     return p->decoder.init(data,length,songNumber);
 }
 
+int fc14dec_reinit(void* ptr, int songNumber) {
+    FC14_DECLARE_DECODER;
+    return p->decoder.init(songNumber);
+}
+
 int fc14dec_restart(void* ptr) {
     FC14_DECLARE_DECODER;
     return p->decoder.restart();

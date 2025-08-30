@@ -36,6 +36,7 @@ class FC : public PaulaPlayer {
 
     void setMixer(PaulaMixer*);
     bool init(void*,udword,int);
+    bool init(int);
     
     bool isOurData(void*,udword);  // optional
     bool restart();

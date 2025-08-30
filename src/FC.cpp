@@ -29,6 +29,7 @@ bool FC::FC_init(int songNumber) {
     
     setRate(50);
     stats.voices = 4;
+    stats.songs = 1;
 
     // Although this is a constant for most of the formats, some define
     // it within the header, and we assign this here since some of the

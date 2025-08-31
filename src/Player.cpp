@@ -273,7 +273,7 @@ bool FC::init(void *data, udword length, int songNumber) {
     if (analyze->usesSndSeq(0x80) ) {
         traits.volSeqSnd80 = true;
     }
-    if (analyze->portamentoTooStrong() ) {
+    if (traits.compressed && analyze->portamentoTooStrong() ) {
         pPortamentoFunc = &FC::TFMX_portamento;
     }
     analyze->dump();

@@ -475,6 +475,11 @@ void FC::TFMX_processPerVol(VoiceVars& voiceX) {
         t += voiceX.pattVal1;
         t += voiceX.transpose;
     }
+    // Loop into low octave at 0x48 downwards, if excessive transpose
+    // would underflow by just a few semitones accidentally.
+    if (t<0 && (t&0x7f)>=0x78) {
+        t += 0x48;
+    }
     // else: lock note (i.e. transpose value from sequence is note to play)
     ubyte note = t&0x7f;
     sword period = periods[note];

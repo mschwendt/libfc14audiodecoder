@@ -51,6 +51,8 @@ FC::FC() {
 }
 
 FC::~FC() {
+    delete analyze;
+    
     delete[] input;
     inputLen = 0;
 }

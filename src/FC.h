@@ -55,11 +55,9 @@ class FC : public PaulaPlayer {
 
     bool copyStats(struct fc14dec_mod_stats* targetStats);
     
-    //#ifdef FC_API_EXT_1
     uword getSampleLength(unsigned int num);
     uword getSampleRepOffset(unsigned int num);
     uword getSampleRepLength(unsigned int num);
-    //#endif
 
     void dumpModule();
     
@@ -147,8 +145,8 @@ class FC : public PaulaPlayer {
     // Therefore we allocate additional sizeof(..) bytes during init.
     static const ubyte silenceData[8];
 
-    // Index is AND 0x7f. Table is longer.
-    static const uword periods[(5+6)*12+4];
+    // Index is AND 0x7f.
+    static const uword periods[0x80];
 
     static const uword SMOD_waveInfo[47*4];
     static const ubyte SMOD_waveforms[];

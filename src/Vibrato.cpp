@@ -91,7 +91,7 @@ uword FC::TFMX_vibrato(VoiceVars& voiceX, uword period, ubyte note) {
     if (traits.vibScaling ) {
         note += 80;
         while (note < 128) {
-            offs <<= 1;  // double vibrato value for each octave
+            offs += offs;  // double vibrato value for each octave
             note += 12;  // advance octave index
         };
     }

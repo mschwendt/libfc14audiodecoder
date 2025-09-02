@@ -266,6 +266,7 @@ bool FC::init(void *data, udword length, int songNumber) {
     } while ( !songEnd );
     loopMode = loopModeBak;
 
+    analyze->dump();
     if (analyze->usesE7setDiffWave(this) ) {
         TFMX_sndModFuncs[7] = &FC::TFMX_sndSeq_E7_setDiffWave;
     }
@@ -276,9 +277,11 @@ bool FC::init(void *data, udword length, int songNumber) {
         traits.volSeqSnd80 = true;
     }
     if (traits.compressed && analyze->portamentoTooStrong() ) {
-        pPortamentoFunc = &FC::TFMX_portamento;
+#if defined(DEBUG)
+        cout << "Portamento : strong or period range exceeded!" << endl;
+#endif
     }
-    analyze->dump();
+    TraitsByChecksum();
     restart();
 
 #if defined(DEBUG)

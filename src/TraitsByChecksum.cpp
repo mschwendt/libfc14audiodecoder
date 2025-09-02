@@ -21,18 +21,22 @@
 #include "Analyze.h"
 
 void FC::TraitsByChecksum() {
+    smartPtr<const ubyte> sBuf(fcBuf.tellBegin(),fcBuf.tellLength());
+    const ubyte* pEnd;
+    const ubyte* r;
+    
     // If there's player machine code before the TFMX header, checksum it.
     if ( offsets.header != 0 ) {
         udword crc1 = 0;
 
         // Search for silence seq in player object,
         // because that is before the tons of voice variables.
-        ubyte* pEnd = fcBuf.tellBegin()+offsets.header;
+        pEnd = sBuf.tellBegin()+offsets.header;
         const ubyte* pSilence = silenceData;
-        const ubyte* r = std::search(fcBuf.tellBegin(),pEnd,pSilence,pSilence+sizeof(silenceData));
+        r = std::search(sBuf.tellBegin(),pEnd,pSilence,pSilence+sizeof(silenceData));
         if (r != pEnd) {
-            udword silenceOffs = (r-fcBuf.tellBegin());
-            crc1 = analyze->crc(fcBuf.tellBegin(),silenceOffs);
+            udword silenceOffs = (r-sBuf.tellBegin());
+            crc1 = analyze->crc(sBuf,0,silenceOffs);
         }
             
         // Wings of Death  end, intro, outro, title
@@ -64,6 +68,26 @@ void FC::TraitsByChecksum() {
             traits.sndSeqGoto = false;
             TFMX_sndModFuncs[5] = &FC::TFMX_sndSeq_E5_repOffs;  // NB: but not used by those modules!
             TFMX_sndModFuncs[7] = &FC::TFMX_sndSeq_E7_setDiffWave;
+        }
+    }
+
+    if (traits.compressed) {
+        udword crc2 = analyze->crc(sBuf,offsets.trackTable,trackTabLen);
+
+        // Astaroth
+        // Chambers of Shaolin
+        // Dragonflight (musf)
+        if (crc2 == 0x5495cc19 || crc2 == 0x7866963a ||
+            crc2 == 0xc04a79a7 ||
+            crc2 == 0x2158d5fc || crc2 == 0x2518e0aa || crc2 == 0x3e8f7323 ) {
+            pPortamentoFunc = &FC::TFMX_portamento;
+        }
+        // Wings of Death level 1-7
+        if (crc2 == 0x6084ae9f || crc2 == 0x8ec439c || crc2 == 0x664a0708 ||
+            crc2 == 0x5cbcc3e9 || crc2 == 0x58514e2 || crc2 == 0x9beab3a4 ||
+            crc2 == 0xb6185651 ) {
+            traits.skipToWaveMod = true;
+            pPortamentoFunc = &FC::TFMX_portamento;
         }
     }
 }

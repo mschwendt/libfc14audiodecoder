@@ -42,7 +42,7 @@ bool FC::COSO_init(int songNumber) {
     pSoundFunc = &FC::TFMX_soundModulation;
     pVibratoFunc = &FC::COSO_vibrato;
     pPortamentoFunc = &FC::COSO_portamento;
-    // Some COSO players use TFMX portamento. D'oh!
+    // Some COSO machine code players use TFMX portamento. D'oh!
     if ( TFMX_findPortamentoCode() ) {
         pPortamentoFunc = &FC::TFMX_portamento;
     }

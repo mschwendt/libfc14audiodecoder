@@ -17,20 +17,20 @@
 #include <vector>
 
 #include "FC.h"
+#include "SmartPtr.h"
 
 class Analyze {
 public:
     void clear();
     void dump();
 
-    udword crc(const ubyte *ptr, udword len);
+    udword crc(smartPtr<const ubyte> ptr, udword offset, udword len);
 
     void gatherSndSeq(ubyte seq);
     void gatherSndSeqCmd(ubyte seq, ubyte cmd);
     void gatherVolSeqCmd(ubyte seq, ubyte cmd);
     void gatherSeqTrans(ubyte seq, ubyte tr);
     void gatherVibrato(FC::VoiceVars&);
-    void gatherPortamento(sbyte speed, sword offset);
     void gatherPortamentoAccuracy(FC*, FC::VoiceVars&, ubyte);
     void gatherPortamentoRange(FC*, sword, sword);
     void gatherSampleNum(ubyte num);
@@ -51,7 +51,6 @@ private:
     std::set<ubyte> vibratoSpeedSet;
     
     std::set<sbyte> portamentoSpeedSet;
-    udword portamentoOffsetMax;
     udword portamentoSemitonesOffMax;
     bool portamentoRangeFailure;
 

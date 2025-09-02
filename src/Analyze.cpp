@@ -21,11 +21,11 @@
 #include "FC.h"
 #include "Debug.h"
 
-udword Analyze::crc(const ubyte *ptr, udword len) {
+udword Analyze::crc(smartPtr<const ubyte> ptr, udword offset, udword len) {
     udword crc = 0xffffffffL;
     if (len) {
         do {
-            crc = crc32tab[((int)crc ^ (*ptr++)) & 0xff] ^ (crc >> 8);
+            crc = crc32tab[((int)crc ^ ptr[offset++]) & 0xff] ^ (crc >> 8);
         } while (--len);
     }
     return (crc ^ 0xffffffffL);      
@@ -93,7 +93,6 @@ void Analyze::clear() {
     vibratoSpeedSet.clear();
     
     portamentoSpeedSet.clear();
-    portamentoOffsetMax = 0;
     portamentoSemitonesOffMax = 0;
     portamentoRangeFailure = false;
     
@@ -148,7 +147,6 @@ void Analyze::dump() {
 
     cout << "Negative vibrato speed : " << (int)usesNegVibSpeed() << endl;
 
-    //cout << "Portamento offset max: " << (int)portamentoOffsetMax << endl;
     cout << "Portamento semitones off max: " << dec << (int)portamentoSemitonesOffMax << endl;
     cout << "Portamento range failure: " << dec << (int)portamentoRangeFailure << endl;
     cout << "Portamento speeds: ";
@@ -242,12 +240,6 @@ bool Analyze::usesE7setDiffWave(FC* decoder) {
 void Analyze::gatherSeqTrans(ubyte seq, ubyte tr) {
     seqTransMap[seq].valuesUsed.insert(tr);
     //seqTransMap[seq].valuesCounted[tr]++;
-}
-
-void Analyze::gatherPortamento(sbyte speed, sword offset) {
-    portamentoSpeedSet.insert(speed);
-    if (offset > portamentoOffsetMax)
-        portamentoOffsetMax = offset;
 }
 
 void Analyze::gatherPortamentoAccuracy(FC* decoder, FC::VoiceVars& voiceX, ubyte note) {

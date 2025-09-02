@@ -86,7 +86,7 @@ void FC::TraitsByChecksum() {
         if (crc2 == 0x6084ae9f || crc2 == 0x8ec439c || crc2 == 0x664a0708 ||
             crc2 == 0x5cbcc3e9 || crc2 == 0x58514e2 || crc2 == 0x9beab3a4 ||
             crc2 == 0xb6185651 ) {
-            traits.skipToWaveMod = true;
+            traits.skipToWaveMod = true;  // default for COSO, though
             pPortamentoFunc = &FC::TFMX_portamento;
         }
     }

@@ -58,8 +58,7 @@ FC::~FC() {
 }
 
 void FC::clearFormat() {
-    stats.voices = 4;
-    stats.songs = 0;
+    memset(&stats,0,sizeof(stats));
     
     songEnd = false;
     duration = 0;
@@ -581,16 +580,25 @@ bool FC::copyStats(struct fc14dec_mod_stats* targetStats) {
     return false;
 }
 
-uword FC::getSampleLength(unsigned int num) {
-	return samples[num].len*2;
+uword FC::getSampleLength(uword num) {
+    if (num < stats.samples)
+        return samples[num].len*2;
+    else
+        return 0;
 }
 
-uword FC::getSampleRepOffset(unsigned int num) {
-	return samples[num].repOffs;
+uword FC::getSampleRepOffset(uword num) {
+    if (num < stats.samples)
+        return samples[num].repOffs;
+    else
+        return 0;
 }
 
-uword FC::getSampleRepLength(unsigned int num) {
-	return samples[num].repLen*2;
+uword FC::getSampleRepLength(uword num) {
+    if (num < stats.samples)
+        return samples[num].repLen*2;
+    else
+        return 0;
 }
 
 // --------------------------------------------------------------------------

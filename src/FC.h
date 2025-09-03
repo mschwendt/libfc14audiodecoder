@@ -55,9 +55,9 @@ class FC : public PaulaPlayer {
 
     bool copyStats(struct fc14dec_mod_stats* targetStats);
     
-    uword getSampleLength(unsigned int num);
-    uword getSampleRepOffset(unsigned int num);
-    uword getSampleRepLength(unsigned int num);
+    uword getSampleLength(uword num);
+    uword getSampleRepOffset(uword num);
+    uword getSampleRepLength(uword num);
 
     void dumpModule();
     

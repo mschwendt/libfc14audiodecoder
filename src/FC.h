@@ -203,7 +203,7 @@ class FC : public PaulaPlayer {
     
     udword tickFP, tickFPadd;
 
-    udword duration;  // [ms]
+    udword duration, songPosCurrent;  // [ms]
     udword endShortsDuration;
     bool endShortsMode;
     bool songEnd;

@@ -61,6 +61,7 @@ void FC::clearFormat() {
     memset(&stats,0,sizeof(stats));
     
     songEnd = false;
+    songPosCurrent = 0;
     duration = 0;
 
     pInitFunc = 0;
@@ -299,6 +300,8 @@ bool FC::restart() {
     off();
     mixerInit();
     tickFPadd = 0;
+    songEnd = false;
+    songPosCurrent = 0;
     
     for (ubyte v=0; v<stats.voices; v++) {
         voiceVars[v].voiceNum = v;
@@ -467,6 +470,7 @@ int FC::run() {  // --> PaulaPlayer::run()
         tick = tickFPadd>>8;
         tickFPadd &= 0xff;
     }
+    songPosCurrent += tick;
     return tick;  // in [ms]
 }
 

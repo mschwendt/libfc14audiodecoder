@@ -100,9 +100,16 @@ class FC : public PaulaPlayer {
     //static const ubyte FC_SEQ_SIZE = 64;
     static const ubyte FC_PATTERN_BREAK = 0x49;
 
-    // if ever changing this to non-const, adjust the old <<6 where needed
-    static const uword PATTERN_LENGTH = 0x0040;           // 32*2
-    
+    // TFMX defines the pattern size within a field in its header structure.
+    // The released machine code players evaluate that actually.
+    // Yet all published modules use either pattern size 64 or the
+    // basic compression introduced with the TFMX COSO format.
+    // Future Composer has inherited size 64 as an implicit constant
+    // and has hardcoded it further with a left-shift by 6.
+    // This library has copied the <<6 style and for TFMX checks that
+    // the defined pattern size is 64.
+    static const uword PATTERN_LENGTH = 0x0040;  // 32*2
+
     static const uword TFMX_PROBE_SIZE = 0xb80;
     static const std::string TFMX_TAG;
     static const udword TFMX_HEX = 0x54464d58;  // "TFMX"

@@ -108,12 +108,12 @@ void FC::dumpModule() {
     cout << "Patterns: 0x" << hex << stats.patterns << " at 0x" << offsets.patterns << endl;
     if ( !traits.compressed ) {
         dumpBlocks(fcBuf,offsets.patterns,
-                   stats.patterns*PATTERN_LENGTH,PATTERN_LENGTH);
+                   stats.patterns*traits.patternSize,traits.patternSize);
     }
     else {
         for (int p=0; p<stats.patterns; p++) {
             uword po = readBEuword(fcBuf,offsets.patterns+(p<<1));
-            dumpLines(fcBuf,po,PATTERN_LENGTH,PATTERN_LENGTH,p);
+            dumpLines(fcBuf,po,traits.patternSize,traits.patternSize,p);
         }
     }
 

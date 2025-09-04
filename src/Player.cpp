@@ -564,16 +564,16 @@ udword FC::getSndSeqEnd(ubyte seq) {
 // --------------------------------------------------------------------------
 
 bool FC::havePattern(int n, const ubyte (&pattWanted)[PATTERN_LENGTH]) {
-    udword pattStart = offsets.patterns+(n*PATTERN_LENGTH);
+    udword pattStart = offsets.patterns+(n*traits.patternSize);
     if ( (n<stats.patterns) && (pattStart+n) < inputLen ) {
-        return ( memcmp(input+pattStart,pattWanted,PATTERN_LENGTH) == 0 );
+        return ( memcmp(input+pattStart,pattWanted,traits.patternSize) == 0 );
     }
     return false;
 }
 
 void FC::replacePattern(int n, const ubyte (&pattNew)[PATTERN_LENGTH]) {
-    udword pattStart = offsets.patterns+(n*PATTERN_LENGTH);
-    memcpy(input+pattStart,pattNew,PATTERN_LENGTH);
+    udword pattStart = offsets.patterns+(n*traits.patternSize);
+    memcpy(input+pattStart,pattNew,traits.patternSize);
 }
 
 bool FC::copyStats(struct fc14dec_mod_stats* targetStats) {

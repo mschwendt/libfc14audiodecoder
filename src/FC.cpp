@@ -58,7 +58,7 @@ bool FC::FC_init(int songNumber) {
     // At +12 is length of patterns.
     // Divide by pattern length to get number of used patterns.
     // The editor is limited to 128 patterns.
-    stats.patterns = readBEudword(fcBuf,12)/PATTERN_LENGTH;
+    stats.patterns = readBEudword(fcBuf,12)/traits.patternSize;
     // At +16 is offset to first sound modulation sequence.
     offsets.sndModSeqs = readBEudword(fcBuf,16);
     // At +20 is total length of sound modulation sequences.

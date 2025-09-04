@@ -66,7 +66,7 @@ FC_CHECK_NOTHROW
 
 AC_SUBST(CXXFLAGS)
 
-LT_INIT([disable-static])
+LT_INIT([])
 
 AC_CONFIG_FILES([Makefile libfc14audiodecoder.pc src/Makefile])
 AC_OUTPUT

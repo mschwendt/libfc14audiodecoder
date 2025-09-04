@@ -92,10 +92,6 @@ void Analyze::clear() {
     vibratoAmplSet.clear();
     vibratoSpeedSet.clear();
     
-    portamentoSpeedSet.clear();
-    portamentoSemitonesOffMax = 0;
-    portamentoRangeFailure = false;
-    
     sndSeqSet.clear();
     sndSeqCmdMap.clear();
     volSeqCmdMap.clear();
@@ -146,14 +142,6 @@ void Analyze::dump() {
     cout << endl;
 
     cout << "Negative vibrato speed : " << (int)usesNegVibSpeed() << endl;
-
-    cout << "Portamento semitones off max: " << dec << (int)portamentoSemitonesOffMax << endl;
-    cout << "Portamento range failure: " << dec << (int)portamentoRangeFailure << endl;
-    cout << "Portamento speeds: ";
-    std::for_each(portamentoSpeedSet.begin(), portamentoSpeedSet.end(), [](sbyte c) {
-        cout << dec << (int)c << ' ';
-    });
-    cout << endl;
 
     cout << "Sound sequence transpose/pitch values used:" << endl;
     for ( SeqTraitsMap::iterator it = seqTransMap.begin();
@@ -240,35 +228,4 @@ bool Analyze::usesE7setDiffWave(FC* decoder) {
 void Analyze::gatherSeqTrans(ubyte seq, ubyte tr) {
     seqTransMap[seq].valuesUsed.insert(tr);
     //seqTransMap[seq].valuesCounted[tr]++;
-}
-
-void Analyze::gatherPortamentoAccuracy(FC* decoder, FC::VoiceVars& voiceX, ubyte note) {
-    int semiTones = 0;
-    if (voiceX.portaDiffOld != 0) {
-        sdword lastPeriodWithPorta = voiceX.lastPeriod+voiceX.portaDiffOld;
-        uword d = abs(decoder->periods[0]-lastPeriodWithPorta);
-        int n = 0;
-        for (int i=1; i<0x48; i++) {
-            if (abs(decoder->periods[i]-lastPeriodWithPorta) >= d)
-                break;
-            d = abs(decoder->periods[i]-lastPeriodWithPorta);
-            n = i;
-        }
-        semiTones = abs(note-n);
-    }
-    if (semiTones > portamentoSemitonesOffMax)
-        portamentoSemitonesOffMax = semiTones;
-}
-
-void Analyze::gatherPortamentoRange(FC* decoder, sword periodBefore, sword periodAfter) {
-    if ( !(periodBefore < decoder->traits.periodMin) &&
-         !(periodBefore > decoder->traits.periodMax) &&
-         ( periodAfter > decoder->traits.periodMax ||
-           periodAfter < decoder->traits.periodMin ) ) {
-        portamentoRangeFailure = true;
-    }
-}
-
-bool Analyze::portamentoTooStrong() {
-    return (portamentoRangeFailure || portamentoSemitonesOffMax > 5);
 }

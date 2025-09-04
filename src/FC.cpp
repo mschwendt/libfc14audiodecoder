@@ -17,7 +17,6 @@
 
 #include <cstring>
 
-#include "Analyze.h"
 #include "FC.h"
 #include "Debug.h"
 

@@ -484,17 +484,8 @@ void FC::TFMX_processPerVol(VoiceVars& voiceX) {
     ubyte note = t&0x7f;
     sword period = periods[note];
 
-    if (period != voiceX.lastPeriod) {
-        analyze->gatherPortamentoAccuracy(this,voiceX,note);
-        voiceX.lastPeriod = period;
-    }
-
     period = (this->*pVibratoFunc)(voiceX,period,note);
-
-    sword periodBefore = period;
     period = (this->*pPortamentoFunc)(voiceX,period);
-    voiceX.portaDiffOld = period-periodBefore;
-    analyze->gatherPortamentoRange(this,periodBefore,period);
 
     if (period < traits.periodMin) {
         period = traits.periodMin;

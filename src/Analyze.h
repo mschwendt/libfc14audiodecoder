@@ -31,14 +31,11 @@ public:
     void gatherVolSeqCmd(ubyte seq, ubyte cmd);
     void gatherSeqTrans(ubyte seq, ubyte tr);
     void gatherVibrato(FC::VoiceVars&);
-    void gatherPortamentoAccuracy(FC*, FC::VoiceVars&, ubyte);
-    void gatherPortamentoRange(FC*, sword, sword);
     void gatherSampleNum(ubyte num);
 
     bool usesSndSeq(ubyte seq);
     bool usesE7setDiffWave(FC*);
     bool usesNegVibSpeed();
-    bool portamentoTooStrong();
     ubyte maxSampleNum();
     
 private:
@@ -50,10 +47,6 @@ private:
     std::set<ubyte> vibratoAmplSet;
     std::set<ubyte> vibratoSpeedSet;
     
-    std::set<sbyte> portamentoSpeedSet;
-    udword portamentoSemitonesOffMax;
-    bool portamentoRangeFailure;
-
     struct SeqTraits {
         std::set<ubyte> valuesUsed;
         std::map<ubyte,udword> valuesCounted;

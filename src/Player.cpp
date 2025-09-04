@@ -276,11 +276,6 @@ bool FC::init(void *data, udword length, int songNumber) {
     if (analyze->usesSndSeq(0x80) ) {
         traits.volSeqSnd80 = true;
     }
-    if (traits.compressed && analyze->portamentoTooStrong() ) {
-#if defined(DEBUG)
-        cout << "Portamento : strong or period range exceeded!" << endl;
-#endif
-    }
     TraitsByChecksum();
     restart();
 
@@ -347,8 +342,6 @@ bool FC::restart() {
         voiceVars[v].waveModSwitch1 = 0;
         voiceVars[v].currentWave = 0xff;
         voiceVars[v].pattCompress = voiceVars[v].pattCompressCount = 0;
-        voiceVars[v].lastPeriod = 0;
-        voiceVars[v].portaDiffOld = 0;
 
         killChannel(voiceVars[v]);
 

@@ -8,19 +8,6 @@ LIBVERSION=1:0:0
 AC_SUBST(LIBVERSION)dnl libtool-style version
 
 AC_CANONICAL_HOST
-cpu=""
-case $host in
-	dnl Deliberately ignoring i486 and older.
-    i586-*)
-   	  cpu="x86"
-	;;
-    i686-*)
-   	  cpu="x86"
-	;;
-    x86_64-*)
-   	  cpu="x86"
-	;;
-esac
 
 AC_PROG_CXX
 AC_PROG_AR

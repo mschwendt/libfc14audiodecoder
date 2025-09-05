@@ -7,7 +7,7 @@ fcdecinclude_HEADERS = fc14audiodecoder.h
 
 lib_LTLIBRARIES = libfc14audiodecoder.la
 
-libfc14audiodecoder_la_LDFLAGS = -version-info @LIBVERSION@
+libfc14audiodecoder_la_LDFLAGS = -version-info @LIBVERSION@ -no-undefined
 
 libfc14audiodecoder_la_SOURCES = \
 fc14audiodecoder.h \

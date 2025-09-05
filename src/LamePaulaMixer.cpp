@@ -41,6 +41,11 @@ LamePaulaMixer::LamePaulaMixer()
     for (int i=0; i<0x100; i++) {
         clipping4[i+0x180] = -128+i;
     }
+
+    // Enforce initialization to some defaults here as to avoid that
+    // mixer is used completely uninitialized.
+    init(4);
+    init(44100,16,2,0,panning);
 }
 
 LamePaulaMixer::~LamePaulaMixer() {
@@ -236,9 +241,6 @@ void LamePaulaMixer::updateRate(ubyte f) {
     if (f != 0) {
         samples = ( samplesOrg = pcmFreq / f );
         samplesPnt = (( pcmFreq % f ) * 65536 ) / f;
-    }
-    else {
-        samples = samplesPnt = 0;
     }
     samplesAdd = 0;
 }

@@ -34,6 +34,8 @@ FC::FC() {
     
     input = 0;
     inputBufLen = inputLen = 0;
+
+    pMixer = 0;
     
     admin.initialized = false;
     admin.isEnabled = false;
@@ -131,6 +133,9 @@ void FC::setMixer(PaulaMixer* mixer) {
 
 // Create needed number of voices and replace the dummies.
 void FC::mixerInit() {
+    if ( !pMixer) {
+        return;
+    }
     pMixer->init(stats.voices);
     for (ubyte v=0; v<stats.voices; v++) {
         voiceVars[v].ch = pMixer->getVoice(v);

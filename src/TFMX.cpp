@@ -146,7 +146,8 @@ void FC::TFMX_nextNote(VoiceVars& voiceX) {
 #if defined(DEBUG2)
         if (voiceX.voiceNum==0) {
             cout << endl;
-            cout << "Step: " << hex << setw(4) << setfill('0') << (trackOffs-offsets.trackTable)/trackStepLen << endl;
+            dumpTimestamp(songPosCurrent);
+            cout << "  Step = " << hex << setw(4) << setfill('0') << (trackOffs-offsets.trackTable)/trackStepLen << endl;
             udword tmp = trackOffs;
             for (ubyte v = 0; v < stats.voices; ++v) {
                 for (int t = 0; t < trackColumnSize; ++t) {

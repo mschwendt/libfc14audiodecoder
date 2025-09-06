@@ -249,7 +249,8 @@ void FC::FC_nextNote(VoiceVars& voiceX) {
 #if defined(DEBUG2)
     if (voiceX.voiceNum==0) {
         cout << endl;
-        cout << "Step = " << hex << setw(4) << setfill('0') << voiceX.trackPos/ trackStepLen;
+        dumpTimestamp(songPosCurrent);
+        cout << "  Step = " << hex << setw(4) << setfill('0') << voiceX.trackPos/ trackStepLen;
         cout << " | " << hex << setfill('0') << (int)(voiceX.trackStart+voiceX.trackPos) << " of " << (int)voiceX.trackStart << " to " << (int)voiceX.trackEnd << endl;
         udword tmp = voiceX.trackStart+voiceX.trackPos;
         for (int t = 0; t < trackStepLen; ++t)

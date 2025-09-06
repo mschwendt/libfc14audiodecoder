@@ -63,6 +63,15 @@ void dumpByte(int b) {
     cout << hex << setw(2) << setfill('0') << (b&0xff) << ' ';
 }
 
+void dumpTimestamp(udword ms) {
+    udword secs = ms / 1000;
+    ms %= 1000;
+    udword mins = secs / 60;
+    secs %= 60;
+    cout << dec << setw(2) << setfill('0') << mins << ':'
+         << setw(2) << setfill('0') << secs;
+}
+
 // --------------------------------------------------------------------------
 
 void FC::dumpModule() {

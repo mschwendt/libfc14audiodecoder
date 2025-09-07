@@ -41,7 +41,7 @@ FC::FC() {
     admin.isEnabled = false;
     
     loopMode = false;
-    endShortsMode = true;
+    endShortsMode = false;
     endShortsDuration = 10*1000;
 
     clearFormat();

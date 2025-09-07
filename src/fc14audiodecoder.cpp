@@ -136,15 +136,15 @@ uint16_t fc14dec_get_sample_rep_length(void* ptr, unsigned int num) {
     return p->decoder.getSampleRepLength(num);
 }
 
-void fc14dec_mute_channel(void* ptr, bool mute, unsigned int channel) {
+void fc14dec_mute_voice(void* ptr, bool mute, unsigned int voice) {
     FC14_DECLARE_DECODER;
-    p->mixer.mute(channel,mute);
+    p->mixer.mute(voice,mute);
 }
 
-uint16_t fc14dec_get_channel_volume(void* ptr, unsigned int channel) {
+uint16_t fc14dec_get_voice_volume(void* ptr, unsigned int voice) {
     FC14_DECLARE_DECODER;
-    if ( !p->mixer.isMuted(channel) ) {
-        return (p->mixer.getVoice(channel)->paula.volume/64.0)*100;
+    if ( !p->mixer.isMuted(voice) ) {
+        return (p->mixer.getVoice(voice)->paula.volume/64.0)*100;
     }
     else {
         return 0;

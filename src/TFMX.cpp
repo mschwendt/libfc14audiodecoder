@@ -53,7 +53,7 @@ bool FC::TFMX_init(int songNumber) {
     stats.sndSeqs = 1+readBEuword(fcBuf,h+4);
     stats.volSeqs = 1+readBEuword(fcBuf,h+6);
     stats.patterns = 1+readBEuword(fcBuf,h+8);
-    stats.trackSteps = stats.trackSteps = 1+readBEuword(fcBuf,h+0xa);
+    stats.trackSteps = 1+readBEuword(fcBuf,h+0xa);
     traits.patternSize = fcBuf[h+0xd];
     if (traits.patternSize != PATTERN_LENGTH) {  // potentially never true
         return false;

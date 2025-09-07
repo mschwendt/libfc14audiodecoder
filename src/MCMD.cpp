@@ -72,7 +72,7 @@ bool FC::MCMD_init(int songNumber) {
     stats.sndSeqs = readBEuword(fcBuf,h+4);
     stats.volSeqs = readBEuword(fcBuf,h+6);
     stats.patterns = readBEuword(fcBuf,h+8);
-    stats.trackSteps = stats.trackSteps = readBEuword(fcBuf,h+0xa);
+    stats.trackSteps = readBEuword(fcBuf,h+0xa);
     traits.patternSize = fcBuf[h+0xd];
     stats.songs = readBEuword(fcBuf,h+0xe);;
     stats.samples = readBEuword(fcBuf,h+0x10);

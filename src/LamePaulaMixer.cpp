@@ -343,7 +343,6 @@ void* LamePaulaMixer::fill8bitMono(void* buffer, udword numberOfSamples) {
         return(buffer8bit);
 
     buffer8bit = (static_cast<ubyte*>(buffer));
-    int vph = 3;
     for (udword n = numberOfSamples; n>0; n--) {
         *buffer8bit += mix[0x4000+getSample_7V()];
         buffer8bit++;
@@ -435,7 +434,6 @@ void* LamePaulaMixer::fill16bitMono( void* buffer, udword numberOfSamples ) {
         return(buffer16bit);
 
     buffer16bit = (static_cast<sword*>(buffer));
-    int vph = 3;
     for (udword n = numberOfSamples; n>0; n--) {
         *buffer16bit += mix[0x4000+getSample_7V()];
         buffer16bit++;

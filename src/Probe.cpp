@@ -156,7 +156,7 @@ bool FC::TFMX_7V_findPlayer(const ubyte* buf, udword len) {
 
     smartPtr<const ubyte> sBuf(buf,len);
     bool foundVolSeqJmp = false;
-    bool foundSndSeqJmp = false;
+    //bool foundSndSeqJmp = false;  // avoid compiler warning
 
     const ubyte* r;
     udword pos = 0;
@@ -175,7 +175,7 @@ bool FC::TFMX_7V_findPlayer(const ubyte* buf, udword len) {
                 }
             }
             else if (sBuf[o] == 0x18) {  // TFMX 7V only
-                foundSndSeqJmp = true;
+                //foundSndSeqJmp = true;  // avoid compiler warning
             }
         }
         pos = o+1;

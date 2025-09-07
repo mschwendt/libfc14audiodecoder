@@ -89,7 +89,7 @@ bool FC::COSO_init(int songNumber) {
     }
 
     // Traverse through found modules and select the right song number.
-    for (int i=0; i<vHeaders.size(); i++) {
+    for (udword i=0; i<vHeaders.size(); i++) {
         h = vHeaders[i];
         ubyte songsInThisMod = readBEuword(fcBuf,h+0x20+0x10);
         if (admin.startSong < songsInThisMod) {

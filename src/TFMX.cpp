@@ -88,6 +88,17 @@ bool FC::TFMX_init(int songNumber) {
     offs += (stats.samples)*traits.sampleStructSize;  // skip sample headers
     offsets.sampleData = offs;
 
+    // Reject Atari ST TFMX modules. As it seems to use different sound
+    // sequence commands, a command like $E2 $E5 with less than $E5 samples
+    // would be invalid for TFMX on Amiga.
+    for (ubyte seq = 0; seq<stats.sndSeqs; seq++) {
+        udword seqOffs = getSndSeq(seq);
+        if ( stats.samples < 0xe5 && fcBuf[seqOffs] == 0xe2 &&
+             fcBuf[seqOffs+1] >= 0xe5 ) {
+            return false;
+        }
+    }
+
     bool maybe4V = TFMX_4V_maybe();
     bool maybe7V = TFMX_7V_maybe();
     if ( !maybe4V && maybe7V ) {

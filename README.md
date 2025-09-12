@@ -1,4 +1,4 @@
-## C language wrapper library for Future Composer & Hippel audio decoding  
+## C language wrapper library for Future Composer & Hippel TFMX audio decoding  
 https://github.com/mschwendt/libfc14audiodecoder
 
 The family of music files supported by this library typically uses one

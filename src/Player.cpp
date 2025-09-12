@@ -480,7 +480,7 @@ void FC::setRate(ubyte f) {
 // --------------------------------------------------------------------------
 
 void FC::Sample::assertBoundaries(smartPtr<ubyte>& pB) {
-    udword bufLen = pB.tellLength();
+    udword bufLen = pB.tellLength()-8;  // FC::silenceData at the end!
     // Avoid potentially unprecise or corrupted sample buffer boundaries.
     if ( startOffs > bufLen-2 )
         startOffs = bufLen-2;

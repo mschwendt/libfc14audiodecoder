@@ -80,7 +80,7 @@ bool FC::TFMX_init(int songNumber) {
     offsets.subSongTab = offs;
     
     offs += (stats.songs+1)*TFMX_SONGTAB_ENTRY_SIZE;  // subsong definitions, one is undefined
-    if ( offs >= fcBuf.tellLength() ) {  // something is fubar then
+    if ( offs >= inputLen ) {  // something is fubar then
         return false;
     }
     offsets.sampleHeaders = offs;

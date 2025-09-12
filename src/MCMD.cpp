@@ -94,7 +94,7 @@ bool FC::MCMD_init(int songNumber) {
     offsets.subSongTab = offs;
     
     offs += stats.songs*TFMX_7V_SONGTAB_ENTRY_SIZE;  // subsong definitions
-    if ( offs >= fcBuf.tellLength() ) {  // something is fubar then
+    if ( offs >= inputLen ) {  // something is fubar then
         return false;
     }
     offsets.sampleHeaders = offs;

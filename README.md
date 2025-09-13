@@ -22,14 +22,8 @@ Internet.
 
 ### Players & Plugins
 
-The primary audio player that is being used while developing this library
-is Audacious:  
- https://audacious-media-player.org/
+* [Audacious](https://audacious-media-player.org/) with [this input plugin](https://github.com/mschwendt/audacious-plugins-fc) as the primary audio player that is being used while developing this library.
 
-The input plug-in for Audacious is maintained here:  
-https://github.com/mschwendt/audacious-plugins-fc
+* [DeaDBeeF](https://deadbeef.sourceforge.io/) with [this input plugin](https://github.com/mschwendt/deadbeef-plugins-fc) as another cross-plattform audio player that has been tested with.
 
-Another cross-plattform audio player that has been tested with
-is DeaDBeeF.  
-The plug-in for it is found here:
-https://github.com/mschwendt/deadbeef-plugins-fc
+* [rePlayer](https://github.com/arnaud-neny/rePlayer) includes a prebuilt plugin among a ton of others as to handle a high number of music file formats.

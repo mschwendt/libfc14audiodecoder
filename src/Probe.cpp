@@ -86,6 +86,9 @@ bool FC::TFMX_findTag(const ubyte* buf, udword len) {
     const ubyte* r = std::search(buf,buf+len,TFMX_TAG.c_str(),TFMX_TAG.c_str()+4);
     if (r != (buf+len) ) {
         udword h = (udword)(r-buf);
+        if (buf[h+4] != 0) {  // require trailing zero
+            return false;
+        }
         // An earlier "COSO" header means this is not uncompressed TFMX,
         // then reject the module.
         if ( (h >= 0x20) && !memcmp(buf+h-0x20,COSO_TAG.c_str(),4) ) {

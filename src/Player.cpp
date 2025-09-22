@@ -268,7 +268,7 @@ bool FC::init(void *data, udword length, int songNumber) {
     restart();
     do {
         duration += run();
-    } while ( !songEnd );
+    } while ( !songEnd && (duration<1000*60*59));
     loopMode = loopModeBak;
 
     analyze->dump();

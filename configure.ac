@@ -1,4 +1,4 @@
-AC_INIT([libfc14audiodecoder], [2.0.1])
+AC_INIT([libfc14audiodecoder], [2.0.2])
 AC_CONFIG_SRCDIR([src/FC.cpp])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([src/Config.h])

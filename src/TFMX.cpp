@@ -179,7 +179,7 @@ void FC::TFMX_nextNote(VoiceVars& voiceX) {
         voiceX.pattStart = offsets.patterns+(pattern<<6);
         voiceX.transpose = fcBufS[trackOffs++];  // TR
         voiceX.soundTranspose = fcBufS[trackOffs++];  // ST
-        if (trackColumnSize==3 && voiceX.soundTranspose == 0x80) {
+        if (trackColumnSize==3 && (ubyte)voiceX.soundTranspose == 0x80) {
         // ST 0x80 is "player off".
             songEnd = true;
             off();
